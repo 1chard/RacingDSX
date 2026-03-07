@@ -33,7 +33,7 @@ namespace RacingDSX
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new UI());
+            Application.Run(new UI(new Core()));
         }
     }
 

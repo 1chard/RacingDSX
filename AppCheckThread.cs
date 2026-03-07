@@ -40,7 +40,7 @@ namespace RacingDSX
 		public bool value = false;
 	}
 
-	internal class AppCheckThread
+	public class AppCheckThread
 	{
 		readonly RacingDSX.Config.Config settings;
 		private Dictionary<String, String> processProfilePairs = new Dictionary<string, string>();
