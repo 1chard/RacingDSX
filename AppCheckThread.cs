@@ -44,19 +44,21 @@ namespace RacingDSX
 	{
 		readonly RacingDSX.Config.Config settings;
 		private Dictionary<String, String> processProfilePairs = new Dictionary<string, string>();
+		private Process process;
 
         readonly IProgress<AppCheckReportStruct> progressReporter;
 
 		protected bool bRunning = false;
 
-		public AppCheckThread(ref RacingDSX.Config.Config currentSettings, IProgress<AppCheckReportStruct> progressReporter)
+		public AppCheckThread(ref RacingDSX.Config.Config currentSettings, IProgress<AppCheckReportStruct> progressReporter, Process process = null)
 		{
 
 			settings = currentSettings;
 			
             this.progressReporter = progressReporter;
+			this.process = process;
 
-			bRunning = false;
+            bRunning = false;
 		}
 
 		public void updateExecutables()
@@ -104,7 +106,7 @@ namespace RacingDSX
 				}
 
 				//int forzaProcesses = 0;
-				Process[] DSX, DSX_2;
+				Process[] DSX, DSX_2, DSY;
 
 				AppCheckReportStruct dsxReport = new AppCheckReportStruct(AppCheckReportStruct.AppType.DSX);
 				AppCheckReportStruct forzaReport = new AppCheckReportStruct(AppCheckReportStruct.AppType.GAME);
@@ -114,29 +116,39 @@ namespace RacingDSX
 					System.Threading.Thread.Sleep(1000);
 					lock (this) { 
 						if (!bRunning) { break; }
-						forzaReport.value = false;
-						forzaReport.message = "";
-						foreach (var processName in processProfilePairs.Keys.AsEnumerable())
-						{
 
-							if (Process.GetProcessesByName(processName).Length > 0)
+                        forzaReport.value = false;
+                        forzaReport.message = "";
+                        if (process != null)
+						{
+							if (!process.HasExited)
 							{
 								forzaReport.value = true;
-								forzaReport.message = processProfilePairs[processName];
-								break;
-							}
+								forzaReport.message = processProfilePairs[process.ProcessName];
+                            }
+
 						}
-						/*	forzaProcesses = Process.GetProcessesByName("ForzaHorizon5").Length;
-							forzaProcesses += Process.GetProcessesByName("ForzaHorizon4").Length; //Guess at name
-							forzaProcesses += Process.GetProcessesByName("ForzaMotorsport7").Length; //Guess at name
-							forzaProcesses += Process.GetProcessesByName("forza_gaming.desktop.x64_release_final").Length; //Guess at name
-							forzaProcesses += Process.GetProcessesByName("forza_steamworks_release_final").Length; //Guess at name*/
+						else
+						{
+                            foreach (var processName in processProfilePairs.Keys.AsEnumerable())
+                            {
+
+                                if (Process.GetProcessesByName(processName).Length > 0)
+                                {
+                                    forzaReport.value = true;
+                                    forzaReport.message = processProfilePairs[processName];
+                                    break;
+                                }
+                            }
+                        }
 
 						// DSX = "DSX" or "DualSenseX"
 						DSX = Process.GetProcessesByName("DSX");
 						DSX_2 = Process.GetProcessesByName("DualsenseX");
+                        DSY = Process.GetProcessesByName("DualSenseY");
 
-						dsxReport.value = (DSX.Length + DSX_2.Length) > 0;
+
+                        dsxReport.value = (DSX.Length + DSX_2.Length + DSY.Length) > 0;
 						//forzaReport.value = forzaProcesses > 0;
 
 						//forzaReport.value = true;

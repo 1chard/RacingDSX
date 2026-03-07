@@ -1,11 +1,22 @@
-![GitHub all releases](https://img.shields.io/github/downloads/cosmii02/racingDSX/total)
+![GitHub all releases](https://img.shields.io/github/downloads/1chard/racingDSX/total)
 
-Tested and confirmed to work with DSX v2 and v3.1
+Tested and confirmed to work with DSX v2, v3.1, and DSY 
 
 🔺🔺 It is REQUIRED to install .NET8 for racingDSX to work at all!🔺🔺           
 Download .NET8.0 from the link here: https://dotnet.microsoft.com/en-us/download
 
+# New launch options available
+- `--nogui`, `--cli` Launches the application without the GUI, loads active configuration file
+- `--attach` Try 10 seconds to attach to game, if successful starts to track game's lifespan, when the game is closed, RacingDSX will automatically close as well
+- `--exe-attach` Runs and attaches to game process, when the game is closed, RacingDSX will automatically close
 
+If you want to auto start RacingDSX with a Steam game without the interface, you can add the above launch options to the game's launch options in Steam:  
+`"C:\Path\To\RacingDSX.exe" --cli --exe-attach %command%`  
+Tested on Forza Horizon 4 and Forza Horizon 5.
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------
 
 # Setting up DiRT Rally 1 / 2 for UDP Connection:
 1. Go to `C:\Users\<USER>\Documents\My Games\DiRT Rally X.0\hardwaresettings`;
@@ -67,6 +78,8 @@ Note for Forza Motorsport 7
 ## Thanks and Credits
 
 [DualSenseX](https://github.com/Paliverse/DualSenseX)
+
+[DualSenseY](https://github.com/WujekFoliarz/DualSenseY-v2)
 
 [Forza-Telemetry](https://github.com/austinbaccus/forza-telemetry/tree/main/ForzaCore)
 

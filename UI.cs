@@ -6,10 +6,8 @@ using System.ComponentModel;
 using System.Linq;
 
 //using System.Configuration;
-using System.Threading;
 using System.Windows.Forms;
 using static RacingDSX.RacingDSXWorker;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace RacingDSX
 {
@@ -22,19 +20,18 @@ namespace RacingDSX
         public UI(Core core)
         {
             this.Core = core;
+
             InitializeComponent();
         }
 
-        void UpdateDSXConnectionStatus(bool bConnected)
+        void UpdateDSXConnectionStatus()
         {
-            toolStripStatusDSX.Image = bConnected ? Resources.greenBtn : Resources.redBtn;
-            Core.bDsxConnected = bConnected;
+            toolStripStatusDSX.Image = Core.bDsxConnected ? Resources.greenBtn : Resources.redBtn;
         }
 
-        void UpdateForzaConnectionStatus(bool bConnected)
+        void UpdateForzaConnectionStatus()
         {
-            toolStripStatusForza.Image = bConnected ? Resources.greenBtn : Resources.redBtn;
-            Core.bForzaConnected = bConnected;
+            toolStripStatusForza.Image = Core.bForzaConnected ? Resources.greenBtn : Resources.redBtn;
         }
 
         public void Output(string Text, bool bShowMessageBox = false)
@@ -62,7 +59,13 @@ namespace RacingDSX
             brakeVibrationMsg.Text = String.Empty;
             brakeMsg.Text = String.Empty;
 
-            Core.Initialize(WorkerThreadReporter, AppCheckReporter);
+            Core.Initialize(WorkerThreadReporter, AppCheckReporter, () =>
+            {
+                this.Invoke(() =>
+                {
+                    this.Close();
+                });
+            });
 
             noRaceGroupBox.Visible = Core.currentSettings.VerboseLevel > Config.VerboseLevel.Off;
             raceGroupBox.Visible = Core.currentSettings.VerboseLevel > Config.VerboseLevel.Off;
@@ -75,9 +78,10 @@ namespace RacingDSX
 
             SetupUI();
 
-            if (Core.currentSettings.DisableAppCheck) { 
-                UpdateDSXConnectionStatus(true);
-                UpdateForzaConnectionStatus(true);
+            if (Core.currentSettings.DisableAppCheck)
+            {
+                UpdateDSXConnectionStatus();
+                UpdateForzaConnectionStatus();
             }
         }
 
@@ -89,11 +93,11 @@ namespace RacingDSX
             }
             else if (value.type == AppCheckReportStruct.AppType.DSX)
             {
-                UpdateDSXConnectionStatus(value.value);
+                UpdateDSXConnectionStatus();
             }
             else
             {
-                UpdateForzaConnectionStatus(value.value);
+                UpdateForzaConnectionStatus();
                 if (value.value)
                 {
                     SwitchActiveProfile(value.message);
@@ -107,27 +111,11 @@ namespace RacingDSX
 
         protected void SwitchActiveProfile(String profileName)
         {
-            Profile profile = null;
-
-            if (profileName == "")
-            {
-                //   profileName = selectedProfile.Name;
-                return;
-            }
-            if (Core.currentSettings.ActiveProfile != null && Core.currentSettings.ActiveProfile.Name == profileName)
+            if (Core.currentSettings.ActiveProfile == null || Core.currentSettings.ActiveProfile.Name == profileName)
                 return;
 
-            if (profileName != null && Core.currentSettings.Profiles.ContainsKey(profileName))
-            {
-                profile = Core.currentSettings.Profiles[profileName];
-
-            }
-            Core.currentSettings.ActiveProfile = profile;
-            ConfigHandler.SaveConfig();
             loadProfilesIntoList();
             SwitchDisplayedProfile(profileName);
-            Core.StopRacingDSXThread();
-            Core.StartRacingDSXThread();
         }
 
         private void disableAppCheck()
@@ -138,8 +126,10 @@ namespace RacingDSX
             toolStripAppCheckButton.Text = "App Check Disabled";
             Core.StopAppCheckThread();
             SwitchActiveProfile(Core.currentSettings.DefaultProfile);
-            UpdateDSXConnectionStatus(true);
-            UpdateForzaConnectionStatus(true);
+            Core.bDsxConnected = true;
+            Core.bForzaConnected = true;
+            UpdateDSXConnectionStatus();
+            UpdateForzaConnectionStatus();
             Core.StartRacingDSXThread();
             ConfigHandler.SaveConfig();
         }
@@ -186,13 +176,10 @@ namespace RacingDSX
             }
         }
 
-        private void UI_FormClosing(object sender, System.Windows.Forms.FormClosingEventArgs e)
+        protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            Core.appCheckThreadCancellationToken.Cancel();
-            Core.appCheckThreadCancellationToken.Dispose();
-
-            Core.forzaThreadCancellationToken.Cancel();
-            Core.forzaThreadCancellationToken.Dispose();
+            Core.close();
+            base.OnFormClosing(e);
         }
 
         #region UI Forms control

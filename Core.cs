@@ -1,6 +1,7 @@
 ﻿using RacingDSX.Config;
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using static RacingDSX.RacingDSXWorker;
@@ -28,6 +29,19 @@ namespace RacingDSX
         public CancellationTokenSource forzaThreadCancellationToken;
         public CancellationToken forzaThreadToken;
 
+        public ManualResetEvent eventTimeoutAttach;
+
+        public bool bForzaOpenedOnceAttached = false;
+        public Process process = null;
+
+        public void Join()
+        {
+            if (RacingDSXThread != null)
+            {
+                RacingDSXThread.Join();
+            }
+        }
+
         private void LoadSettings()
         {
             // Get values from the config given their key and their target type.
@@ -43,10 +57,28 @@ namespace RacingDSX
             }
         }
 
-        public void Initialize(Action<RacingDSXReportStruct> racingDsxHandler, Action<AppCheckReportStruct> appCheckHandler)
+        public void close()
         {
-            LoadSettings();
+            appCheckThreadCancellationToken.Cancel();
+            appCheckThreadCancellationToken.Dispose();
 
+            forzaThreadCancellationToken.Cancel();
+            forzaThreadCancellationToken.Dispose();
+        }
+
+        public Core(Process process)
+        {
+            this.process = process;
+            if (process != null)
+            {
+                bForzaOpenedOnceAttached = true;
+            }
+            LoadSettings();
+        }
+
+
+        public void Initialize(Action<RacingDSXReportStruct> racingDsxHandler, Action<AppCheckReportStruct> appCheckHandler, Action appCloseHandler)
+        {
             var forzaProgressHandler = new Progress<RacingDSXReportStruct>(racingDsxHandler);
 
             RacingDSXWorker = new RacingDSXWorker(currentSettings, forzaProgressHandler);
@@ -57,6 +89,24 @@ namespace RacingDSX
             forzaThreadToken.Register(() => RacingDSXWorker.Stop());
             var progressHandler = new Progress<AppCheckReportStruct>(appCheckReportStruct =>
             {
+
+                if (appCheckReportStruct.type == AppCheckReportStruct.AppType.DSX)
+                {
+                    bDsxConnected = appCheckReportStruct.value;
+                }
+                else if (appCheckReportStruct.type == AppCheckReportStruct.AppType.GAME)
+                {
+                    bForzaConnected = appCheckReportStruct.value;
+
+                    var profileName = appCheckReportStruct.value ? appCheckReportStruct.message : null;
+
+                    if (SwitchActiveProfile(profileName))
+                    {
+                        StopRacingDSXThread();
+                        StartRacingDSXThread();
+                    }
+                }
+
                 if (RacingDSXThread == null)
                 {
                     if (bForzaConnected && bDsxConnected)
@@ -72,9 +122,16 @@ namespace RacingDSX
                     }
                 }
 
+                if (bForzaOpenedOnceAttached && appCheckReportStruct.type == AppCheckReportStruct.AppType.GAME && appCheckReportStruct.value == false)
+                {
+                    appCloseHandler();
+                    return;
+                }
+
                 appCheckHandler(appCheckReportStruct);
             });
-            appCheckWorker = new AppCheckThread(ref currentSettings, progressHandler);
+
+            appCheckWorker = new AppCheckThread(ref currentSettings, progressHandler, this.process);
             appCheckThreadCancellationToken = new CancellationTokenSource();
             appCheckThreadToken = appCheckThreadCancellationToken.Token;
 
@@ -82,12 +139,35 @@ namespace RacingDSX
             if (!currentSettings.DisableAppCheck)
             {
                 startAppCheckThread();
-
             }
             else
             {
+                bDsxConnected = true;
+                bForzaConnected = true;
                 StartRacingDSXThread();
             }
+        }
+
+        public bool SwitchActiveProfile(String profileName)
+        {
+            Profile profile = null;
+
+            if (profileName == "")
+            {
+                return false;
+            }
+            if (currentSettings.ActiveProfile != null && currentSettings.ActiveProfile.Name == profileName)
+                return false;
+
+            if (profileName != null && currentSettings.Profiles.ContainsKey(profileName))
+            {
+                profile = currentSettings.Profiles[profileName];
+
+            }
+            currentSettings.ActiveProfile = profile;
+            ConfigHandler.SaveConfig();
+
+            return true;
         }
 
         public void StartRacingDSXThread()

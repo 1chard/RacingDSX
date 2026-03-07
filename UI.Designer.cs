@@ -2448,8 +2448,6 @@ namespace RacingDSX
         }
 
         #endregion
-        //private System.ComponentModel.BackgroundWorker mainWorker;
-        //private System.ComponentModel.BackgroundWorker connectionWorker;
         private System.Windows.Forms.Panel mainPanel;
 		private System.Windows.Forms.TabControl mainTabControl;
 		private System.Windows.Forms.TabPage brakeConfigTabPage;

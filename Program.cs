@@ -1,19 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace RacingDSX
 {
+
     public class Program
     {
-        public const String VERSION = "0.6.7";
-
-        [STAThread]
+        public const String VERSION = "0.7.0";
+        
         static void Main(string[] args)
         {
+            bool isGuiMode = true;
+            bool followGame = false;
+            Process process = null;
+
             for (int i = 0; i < args.Length; i++)
             {
                 string arg = args[i];
@@ -22,20 +31,101 @@ namespace RacingDSX
                 {
                     case "-v":
                         {
+                            Console.WriteLine("RacingDSX Version: " + VERSION);
                             return;
+                        }
+                    case "--nogui":
+                    case "--cli":
+                        {
+                            isGuiMode = false;
+                            break;
+                        }
+                    case "--attach":
+                        {
+                            followGame = true;
+                            break;
+                        }
+                    case "--exe-attach":
+                        {
+                            i++;
+
+                            if (i >= args.Length)
+                            {
+                                Console.WriteLine("Error: --exe-attach requires an argument");
+                                return;
+                            }
+
+                            Console.WriteLine("Starting process: " + args[i]);
+
+                            process = Process.Start(new ProcessStartInfo
+                            {
+                                FileName = args[i],
+                                Arguments = "",
+                                WorkingDirectory = Path.GetDirectoryName(args[i]),
+                                UseShellExecute = true
+                            });
+                            Console.WriteLine($"Jogo iniciado: {process.ProcessName} ({process.Id})");
+
+                            break;
                         }
                     default:
                         {
-                            break;
+                            Console.WriteLine("Unknown argument: " + arg);
+                            return;
                         }
                 }
             }
 
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new UI(new Core()));
+            var core = new Core(process);
+
+            if (followGame)
+            {
+                Console.WriteLine("Trying to attach");
+                if (!TestGameExists(core.selectedProfile.executableNames))
+                {
+                    Console.WriteLine("Failed to attach in 10 seconds");
+                    return;
+                } else
+                {
+                    core.bForzaOpenedOnceAttached = true;
+                    Console.WriteLine("Attached successfully");
+                }
+            }
+
+            if (isGuiMode)
+            {
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                Application.Run(new UI(core));
+            }
+            else
+            {
+                new CLI(core);
+            }
+        }
+
+        public static bool TestGameExists(List<string> executableNames)
+        {
+            for (var i = 0; i < 10; i++)
+            {
+                if(i != 0)
+                    System.Threading.Thread.Sleep(1000);
+
+                foreach (var processName in executableNames)
+                {
+
+                    if (Process.GetProcessesByName(processName).Length > 0)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
     }
+
+   
 
     public class ParametersConverter : JsonConverter<object[]>
     {

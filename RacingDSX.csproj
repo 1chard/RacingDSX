@@ -4,13 +4,10 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
-    <PublishSingleFile Condition="'$(Configuration)' == 'Release'">true</PublishSingleFile>
-	<SelfContained Condition="'$(Configuration)' == 'Release'">true</SelfContained>
-	 <PublishReadyToRun Condition="'$(Configuration)' == 'Release'">true</PublishReadyToRun>
+    <PublishSingleFile>true</PublishSingleFile>
+	<SelfContained>false</SelfContained>
+	<PublishReadyToRun>true</PublishReadyToRun>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-	  <!--<PublishSingleFile>true</PublishSingleFile>
-	  <SelfContained>true</SelfContained>
-	  <PublishReadyToRun>true</PublishReadyToRun>-->
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platforms>AnyCPU</Platforms>
     <PackageReadmeFile>Readme.md</PackageReadmeFile>
