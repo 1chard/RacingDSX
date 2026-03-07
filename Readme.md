@@ -10,11 +10,14 @@ Download .NET8.0 from the link here: https://dotnet.microsoft.com/en-us/download
 - `--attach` Try 10 seconds to attach to game, if successful starts to track game's lifespan, when the game is closed, RacingDSX will automatically close as well
 - `--exe-attach` Runs and attaches to game process, when the game is closed, RacingDSX will automatically close
 
-If you want to auto start RacingDSX with a Steam game without the interface, you can add the above launch options to the game's launch options in Steam:  
-`"C:\Path\To\RacingDSX.exe" --cli --exe-attach %command%`  
+If you want to auto start RacingDSX with a Steam game without the interface, follow the steps:  
+1. Open game properties
+<img width="258" height="200" alt="image" src="https://github.com/user-attachments/assets/180f4e5d-5fb9-40a7-9a5a-1cb17626ffde" />
+ 
+2. Put on Launch Options: `"C:\Path\To\RacingDSX.exe" --cli --exe-attach %command%`  
+<img width="621" height="175" alt="image" src="https://github.com/user-attachments/assets/7a230833-e883-433a-b506-fd942e51082e" />
+
 Tested on Forza Horizon 4 and Forza Horizon 5.
-
-
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
