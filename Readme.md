@@ -6,15 +6,17 @@ Tested and confirmed to work with DSX v2, v3.1, and DSY
 Download .NET8.0 from the link here: https://dotnet.microsoft.com/en-us/download
 
 # New launch options available
-- `--nogui`, `--cli` Launches the application without the GUI, loads active configuration file
+- `--nogui`, `--headless` Launches the application without the GUI, loads active configuration file
 - `--attach` Try 10 seconds to attach to game, if successful starts to track game's lifespan, when the game is closed, RacingDSX will automatically close as well
 - `--exe-attach` Runs and attaches to game process, when the game is closed, RacingDSX will automatically close
 
-If you want to auto start RacingDSX with a Steam game without the interface, you can add the above launch options to the game's launch options in Steam:  
-`"C:\Path\To\RacingDSX.exe" --cli --exe-attach %command%`  
-Tested on Forza Horizon 4 and Forza Horizon 5.
+If you want to auto start RacingDSX with a Steam game without the interface, follow the steps:  
+1. Open game properties
+<img width="258" height="200" alt="image" src="https://github.com/user-attachments/assets/180f4e5d-5fb9-40a7-9a5a-1cb17626ffde" />
+ 
+2. Put on Launch Options: `"C:\Path\To\RacingDSX.exe" --headless --exe-attach %command%`  
 
-
+Use tray's "Open Interface" option to open GUI if you started RacingDSX with `--nogui` or `--headless`.
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
