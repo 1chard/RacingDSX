@@ -25,7 +25,8 @@ namespace RacingDSX
             {
                 VERBOSEMESSAGE = 0,
                 NORACE = 1,
-                RACING = 2
+                RACING = 2,
+                HEARTBEAT = 3,
             }
 
             public enum RacingReportType : ushort
@@ -336,6 +337,8 @@ namespace RacingDSX
                     resultBuffer = client.Receive(ref ipEndPoint);
                     if (resultBuffer == null)
                         continue;
+
+                    progressReporter.Report(new RacingDSXReportStruct(VerboseLevel.Off, RacingDSXReportStruct.ReportType.HEARTBEAT, 0, ""));
 
                     if (settings.VerboseLevel > VerboseLevel.Limited && progressReporter != null)
                     {

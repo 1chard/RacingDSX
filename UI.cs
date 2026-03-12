@@ -13,25 +13,30 @@ namespace RacingDSX
 {
     public partial class UI : Form
     {
-        private Core Core;
+        private Core core;
         String clickedProfileName = null;
         int selectedIndex = 0;
 
         public UI(Core core)
         {
-            this.Core = core;
+            this.core = core;
 
             InitializeComponent();
         }
 
+        public void SetUDPForzaConnectionStatus(bool val)
+        {
+            toolStripStatusUDPForza.Image = val ? Resources.greenBtn : Resources.redBtn;
+        }
+
         void UpdateDSXConnectionStatus()
         {
-            toolStripStatusDSX.Image = Core.bDsxConnected ? Resources.greenBtn : Resources.redBtn;
+            toolStripStatusDSX.Image = core.bDsxConnected ? Resources.greenBtn : Resources.redBtn;
         }
 
         void UpdateForzaConnectionStatus()
         {
-            toolStripStatusForza.Image = Core.bForzaConnected ? Resources.greenBtn : Resources.redBtn;
+            toolStripStatusForza.Image = core.bForzaConnected ? Resources.greenBtn : Resources.redBtn;
         }
 
         public void Output(string Text, bool bShowMessageBox = false)
@@ -51,7 +56,7 @@ namespace RacingDSX
 
         private void UI_Load(object sender, EventArgs e)
         {
-            this.Text = "RacingDSX version: " + Program.VERSION;
+            this.Text = "RacingDSX version: " + Program.VERSION + (core.targetExecutableName != null ? $" [{core.targetExecutableName}] " : "");
 
             noRaceText.Text = String.Empty;
             throttleVibrationMsg.Text = String.Empty;
@@ -59,33 +64,25 @@ namespace RacingDSX
             brakeVibrationMsg.Text = String.Empty;
             brakeMsg.Text = String.Empty;
 
-            Core.Initialize(WorkerThreadReporter, AppCheckReporter, () =>
-            {
-                this.Invoke(() =>
-                {
-                    this.Close();
-                });
-            });
+            noRaceGroupBox.Visible = core.currentSettings.VerboseLevel > Config.VerboseLevel.Off;
+            raceGroupBox.Visible = core.currentSettings.VerboseLevel > Config.VerboseLevel.Off;
 
-            noRaceGroupBox.Visible = Core.currentSettings.VerboseLevel > Config.VerboseLevel.Off;
-            raceGroupBox.Visible = Core.currentSettings.VerboseLevel > Config.VerboseLevel.Off;
-
-            verboseModeOffToolStripMenuItem.Checked = Core.currentSettings.VerboseLevel == VerboseLevel.Off;
-            verboseModeLowToolStripMenuItem.Checked = Core.currentSettings.VerboseLevel == VerboseLevel.Limited;
-            verboseModeFullToolStripMenuItem.Checked = Core.currentSettings.VerboseLevel == VerboseLevel.Full;
-            toolStripDSXPortButton.Text = "DSX Port: " + Core.currentSettings.DSXPort.ToString();
-            toolStripVerboseMode.Text = "Verbose Mode: " + Core.currentSettings.VerboseLevel.ToString();
+            verboseModeOffToolStripMenuItem.Checked = core.currentSettings.VerboseLevel == VerboseLevel.Off;
+            verboseModeLowToolStripMenuItem.Checked = core.currentSettings.VerboseLevel == VerboseLevel.Limited;
+            verboseModeFullToolStripMenuItem.Checked = core.currentSettings.VerboseLevel == VerboseLevel.Full;
+            toolStripDSXPortButton.Text = "DSX Port: " + core.currentSettings.DSXPort.ToString();
+            toolStripVerboseMode.Text = "Verbose Mode: " + core.currentSettings.VerboseLevel.ToString();
 
             SetupUI();
 
-            if (Core.currentSettings.DisableAppCheck)
+            if (core.currentSettings.DisableAppCheck)
             {
                 UpdateDSXConnectionStatus();
                 UpdateForzaConnectionStatus();
             }
         }
 
-        protected void AppCheckReporter(AppCheckReportStruct value)
+        public void AppCheckReporter(AppCheckReportStruct value)
         {
             if (value.type == AppCheckReportStruct.AppType.NONE)
             {
@@ -109,32 +106,7 @@ namespace RacingDSX
             }
         }
 
-        protected void SwitchActiveProfile(String profileName)
-        {
-            if (Core.currentSettings.ActiveProfile == null || Core.currentSettings.ActiveProfile.Name == profileName)
-                return;
-
-            loadProfilesIntoList();
-            SwitchDisplayedProfile(profileName);
-        }
-
-        private void disableAppCheck()
-        {
-            Core.currentSettings.DisableAppCheck = true;
-            toolStripAppCheckOnItem.Checked = false;
-            toolStripAppCheckOffItem.Checked = true;
-            toolStripAppCheckButton.Text = "App Check Disabled";
-            Core.StopAppCheckThread();
-            SwitchActiveProfile(Core.currentSettings.DefaultProfile);
-            Core.bDsxConnected = true;
-            Core.bForzaConnected = true;
-            UpdateDSXConnectionStatus();
-            UpdateForzaConnectionStatus();
-            Core.StartRacingDSXThread();
-            ConfigHandler.SaveConfig();
-        }
-
-        protected void WorkerThreadReporter(RacingDSXReportStruct value)
+        public void WorkerThreadReporter(RacingDSXReportStruct value)
         {
             switch (value.type)
             {
@@ -142,7 +114,7 @@ namespace RacingDSX
                     Output(value.message);
                     break;
                 case RacingDSXReportStruct.ReportType.NORACE:
-                    if (Core.currentSettings.VerboseLevel > Config.VerboseLevel.Off)
+                    if (core.currentSettings.VerboseLevel > Config.VerboseLevel.Off)
                     {
                         noRaceGroupBox.Visible = true;
                         raceGroupBox.Visible = false;
@@ -151,7 +123,7 @@ namespace RacingDSX
                     noRaceText.Text = value.message;
                     break;
                 case RacingDSXReportStruct.ReportType.RACING:
-                    if (Core.currentSettings.VerboseLevel > Config.VerboseLevel.Off)
+                    if (core.currentSettings.VerboseLevel > Config.VerboseLevel.Off)
                     {
                         noRaceGroupBox.Visible = false;
                         raceGroupBox.Visible = true;
@@ -176,19 +148,51 @@ namespace RacingDSX
             }
         }
 
+        protected void SwitchActiveProfile(String profileName)
+        {
+            if (core.currentSettings.ActiveProfile == null || core.currentSettings.ActiveProfile.Name == profileName)
+                return;
+
+            loadProfilesIntoList();
+            SwitchDisplayedProfile(profileName);
+        }
+
+        private void disableAppCheck()
+        {
+            core.currentSettings.DisableAppCheck = true;
+            toolStripAppCheckOnItem.Checked = false;
+            toolStripAppCheckOffItem.Checked = true;
+            toolStripAppCheckButton.Text = "App Check Disabled";
+            core.StopAppCheckThread();
+            SwitchActiveProfile(core.currentSettings.DefaultProfile);
+            core.bDsxConnected = true;
+            core.bForzaConnected = true;
+            UpdateDSXConnectionStatus();
+            UpdateForzaConnectionStatus();
+            core.StartRacingDSXThread();
+            ConfigHandler.SaveConfig();
+        }
+
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            Core.close();
             base.OnFormClosing(e);
+            Application.Exit();
+        }
+
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+
+            if (WindowState == FormWindowState.Minimized)
+            {
+                Hide();
+            }
         }
 
         #region UI Forms control
         void SetupUI()
         {
-            // Misc panel
-
-
-            if (Core.currentSettings.DisableAppCheck)
+            if (core.currentSettings.DisableAppCheck)
             {
                 toolStripAppCheckOnItem.Checked = false;
                 toolStripAppCheckOffItem.Checked = true;
@@ -201,8 +205,8 @@ namespace RacingDSX
                 toolStripAppCheckButton.Text = "App Check Enabled";
             }
 
-            toolStripDSXPortButton.Text = "DSX Port: " + Core.currentSettings.DSXPort.ToString();
-            toolStripDSXPortTextBox.Text = Core.currentSettings.DSXPort.ToString();
+            toolStripDSXPortButton.Text = "DSX Port: " + core.currentSettings.DSXPort.ToString();
+            toolStripDSXPortTextBox.Text = core.currentSettings.DSXPort.ToString();
 
 
             loadProfilesIntoList();
@@ -214,7 +218,7 @@ namespace RacingDSX
         {
             profilesListView.Items.Clear();
             //Load Profiles into list
-            foreach (Profile profile in Core.currentSettings.Profiles.Values)
+            foreach (Profile profile in core.currentSettings.Profiles.Values)
             {
                 String name = profile.Name;
                 ListViewItem item = new ListViewItem(name);
@@ -223,12 +227,12 @@ namespace RacingDSX
                 {
                     name += " (Disabled)";
                 }
-                if (profile == Core.currentSettings.ActiveProfile)
+                if (profile == core.currentSettings.ActiveProfile)
                 {
                     name += " (Active)";
                     item.Selected = true;
                 }
-                if (profile.Name == Core.currentSettings.DefaultProfile)
+                if (profile.Name == core.currentSettings.DefaultProfile)
                 {
                     name += " (Default)";
                 }
@@ -242,29 +246,29 @@ namespace RacingDSX
 
             if (profileName == null || profileName == "")
             {
-                if (Core.selectedProfile == null)
+                if (core.selectedProfile == null)
                 {
-                    Core.selectedProfile = Core.currentSettings.Profiles.Values.First();
+                    core.selectedProfile = core.currentSettings.Profiles.Values.First();
                 }
-                profileName = Core.selectedProfile.Name;
+                profileName = core.selectedProfile.Name;
             }
-            if (Core.currentSettings.Profiles.ContainsKey(profileName))
+            if (core.currentSettings.Profiles.ContainsKey(profileName))
             {
-                Core.selectedProfile = Core.currentSettings.Profiles[profileName];
+                core.selectedProfile = core.currentSettings.Profiles[profileName];
             }
-            Core.executables = new BindingList<string>(Core.selectedProfile.executableNames);
-            ExecutableListBox.DataSource = Core.executables;
+            core.executables = new BindingList<string>(core.selectedProfile.executableNames);
+            ExecutableListBox.DataSource = core.executables;
 
 
-            BrakeSettings brakeSettings = Core.selectedProfile.brakeSettings;
-            ThrottleSettings throttleSettings = Core.selectedProfile.throttleSettings;
+            BrakeSettings brakeSettings = core.selectedProfile.brakeSettings;
+            ThrottleSettings throttleSettings = core.selectedProfile.throttleSettings;
 
             brakeSettings.EffectIntensity = Math.Clamp(brakeSettings.EffectIntensity, 0.0f, 1.0f);
             throttleSettings.EffectIntensity = Math.Clamp(throttleSettings.EffectIntensity, 0.0f, 1.0f);
-            this.rpmTrackBar.Value = DenormalizeValue(Core.selectedProfile.RPMRedlineRatio);
+            this.rpmTrackBar.Value = DenormalizeValue(core.selectedProfile.RPMRedlineRatio);
             rpmValueNumericUpDown.Value = rpmTrackBar.Value;
-            this.forzaPortNumericUpDown.Value = Core.selectedProfile.gameUDPPort;
-            this.GameModeComboBox.SelectedIndex = (int)Core.selectedProfile.GameType;
+            this.forzaPortNumericUpDown.Value = core.selectedProfile.gameUDPPort;
+            this.GameModeComboBox.SelectedIndex = (int)core.selectedProfile.GameType;
 
             // Brake Panel
             this.brakeTriggerModeComboBox.SelectedIndex = (int)brakeSettings.TriggerMode;
@@ -342,32 +346,32 @@ namespace RacingDSX
 
         private void verboseModeFullToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Core.currentSettings.VerboseLevel = VerboseLevel.Full;
+            core.currentSettings.VerboseLevel = VerboseLevel.Full;
             verboseModeOffToolStripMenuItem.Checked = false;
             verboseModeLowToolStripMenuItem.Checked = false;
             verboseModeFullToolStripMenuItem.Checked = true;
-            toolStripVerboseMode.Text = "Verbose Mode: " + Core.currentSettings.VerboseLevel.ToString();
+            toolStripVerboseMode.Text = "Verbose Mode: " + core.currentSettings.VerboseLevel.ToString();
             ConfigHandler.SaveConfig();
 
         }
 
         private void verboseModeLowToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Core.currentSettings.VerboseLevel = VerboseLevel.Limited;
+            core.currentSettings.VerboseLevel = VerboseLevel.Limited;
             verboseModeOffToolStripMenuItem.Checked = false;
             verboseModeLowToolStripMenuItem.Checked = true;
             verboseModeFullToolStripMenuItem.Checked = false;
-            toolStripVerboseMode.Text = "Verbose Mode: " + Core.currentSettings.VerboseLevel.ToString();
+            toolStripVerboseMode.Text = "Verbose Mode: " + core.currentSettings.VerboseLevel.ToString();
             ConfigHandler.SaveConfig();
         }
 
         private void verboseModeOffToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Core.currentSettings.VerboseLevel = VerboseLevel.Off;
+            core.currentSettings.VerboseLevel = VerboseLevel.Off;
             verboseModeOffToolStripMenuItem.Checked = true;
             verboseModeLowToolStripMenuItem.Checked = false;
             verboseModeFullToolStripMenuItem.Checked = false;
-            toolStripVerboseMode.Text = "Verbose Mode: " + Core.currentSettings.VerboseLevel.ToString();
+            toolStripVerboseMode.Text = "Verbose Mode: " + core.currentSettings.VerboseLevel.ToString();
 
             noRaceGroupBox.Visible = false;
             raceGroupBox.Visible = false;
@@ -378,7 +382,7 @@ namespace RacingDSX
 
         private void rpmTrackBar_Scroll(object sender, EventArgs e)
         {
-            Core.selectedProfile.RPMRedlineRatio = NormalizeValue(this.rpmTrackBar.Value);
+            core.selectedProfile.RPMRedlineRatio = NormalizeValue(this.rpmTrackBar.Value);
             rpmValueNumericUpDown.Value = rpmTrackBar.Value;
 
 
@@ -386,7 +390,7 @@ namespace RacingDSX
 
         private void rpmValueNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            Core.selectedProfile.RPMRedlineRatio = NormalizeValue((float)this.rpmValueNumericUpDown.Value);
+            core.selectedProfile.RPMRedlineRatio = NormalizeValue((float)this.rpmValueNumericUpDown.Value);
             rpmTrackBar.Value = (int)Math.Floor(rpmValueNumericUpDown.Value);
 
 
@@ -394,7 +398,7 @@ namespace RacingDSX
 
         private void forzaPortNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            Core.selectedProfile.gameUDPPort = (int)Math.Floor(this.forzaPortNumericUpDown.Value);
+            core.selectedProfile.gameUDPPort = (int)Math.Floor(this.forzaPortNumericUpDown.Value);
 
 
         }
@@ -403,119 +407,119 @@ namespace RacingDSX
         #region Brake
         private void brakeEffectIntensityTrackBar_Scroll(object sender, EventArgs e)
         {
-            Core.selectedProfile.brakeSettings.EffectIntensity = NormalizeValue(brakeEffectIntensityTrackBar.Value);
+            core.selectedProfile.brakeSettings.EffectIntensity = NormalizeValue(brakeEffectIntensityTrackBar.Value);
             this.brakeEffectNumericUpDown.Value = brakeEffectIntensityTrackBar.Value;
         }
 
         private void brakeEffectNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            Core.selectedProfile.brakeSettings.EffectIntensity = NormalizeValue((float)brakeEffectNumericUpDown.Value);
+            core.selectedProfile.brakeSettings.EffectIntensity = NormalizeValue((float)brakeEffectNumericUpDown.Value);
             brakeEffectIntensityTrackBar.Value = (int)Math.Floor(brakeEffectNumericUpDown.Value);
         }
 
         private void gripLossTrackBar_Scroll(object sender, EventArgs e)
         {
-            Core.selectedProfile.brakeSettings.GripLossValue = NormalizeValue(gripLossTrackBar.Value);
+            core.selectedProfile.brakeSettings.GripLossValue = NormalizeValue(gripLossTrackBar.Value);
             gripLossNumericUpDown.Value = gripLossTrackBar.Value;
         }
 
         private void gripLossNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            Core.selectedProfile.brakeSettings.GripLossValue = NormalizeValue((float)gripLossNumericUpDown.Value);
+            core.selectedProfile.brakeSettings.GripLossValue = NormalizeValue((float)gripLossNumericUpDown.Value);
             gripLossTrackBar.Value = (int)Math.Floor(gripLossNumericUpDown.Value);
         }
 
         private void brakeVibrationStartTrackBar_Scroll(object sender, EventArgs e)
         {
-            Core.selectedProfile.brakeSettings.VibrationStart = brakeVibrationStartTrackBar.Value;
+            core.selectedProfile.brakeSettings.VibrationStart = brakeVibrationStartTrackBar.Value;
             brakeVibrationStartNumericUpDown.Value = brakeVibrationStartTrackBar.Value;
         }
 
         private void brakeVibrationStartNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            Core.selectedProfile.brakeSettings.VibrationStart = (int)Math.Floor(brakeVibrationStartNumericUpDown.Value);
-            brakeVibrationStartTrackBar.Value = Core.selectedProfile.brakeSettings.VibrationStart;
+            core.selectedProfile.brakeSettings.VibrationStart = (int)Math.Floor(brakeVibrationStartNumericUpDown.Value);
+            brakeVibrationStartTrackBar.Value = core.selectedProfile.brakeSettings.VibrationStart;
         }
 
         private void brakeVibrationModeTrackBar_Scroll(object sender, EventArgs e)
         {
-            Core.selectedProfile.brakeSettings.VibrationModeStart = brakeVibrationModeTrackBar.Value;
+            core.selectedProfile.brakeSettings.VibrationModeStart = brakeVibrationModeTrackBar.Value;
             brakeVibrationModeNumericUpDown.Value = brakeVibrationModeTrackBar.Value;
         }
 
         private void brakeVibrationModeNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            Core.selectedProfile.brakeSettings.VibrationModeStart = (int)Math.Floor(brakeVibrationModeNumericUpDown.Value);
-            brakeVibrationModeTrackBar.Value = Core.selectedProfile.brakeSettings.VibrationModeStart;
+            core.selectedProfile.brakeSettings.VibrationModeStart = (int)Math.Floor(brakeVibrationModeNumericUpDown.Value);
+            brakeVibrationModeTrackBar.Value = core.selectedProfile.brakeSettings.VibrationModeStart;
         }
 
         private void minBrakeVibrationTrackBar_Scroll(object sender, EventArgs e)
         {
-            Core.selectedProfile.brakeSettings.MinVibration = minBrakeVibrationTrackBar.Value;
+            core.selectedProfile.brakeSettings.MinVibration = minBrakeVibrationTrackBar.Value;
             minBrakeVibrationNumericUpDown.Value = minBrakeVibrationTrackBar.Value;
         }
 
         private void minBrakeVibrationNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            Core.selectedProfile.brakeSettings.MinVibration = (int)Math.Floor(minBrakeVibrationNumericUpDown.Value);
-            minBrakeVibrationTrackBar.Value = Core.selectedProfile.brakeSettings.MinVibration;
+            core.selectedProfile.brakeSettings.MinVibration = (int)Math.Floor(minBrakeVibrationNumericUpDown.Value);
+            minBrakeVibrationTrackBar.Value = core.selectedProfile.brakeSettings.MinVibration;
         }
 
         private void maxBrakeVibrationTrackBar_Scroll(object sender, EventArgs e)
         {
-            Core.selectedProfile.brakeSettings.MaxVibration = maxBrakeVibrationTrackBar.Value;
+            core.selectedProfile.brakeSettings.MaxVibration = maxBrakeVibrationTrackBar.Value;
             maxBrakeVibrationNumericUpDown.Value = maxBrakeVibrationTrackBar.Value;
         }
 
         private void maxBrakeVibrationNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            Core.selectedProfile.brakeSettings.MaxVibration = (int)Math.Floor(maxBrakeVibrationNumericUpDown.Value);
-            maxBrakeVibrationTrackBar.Value = Core.selectedProfile.brakeSettings.MaxVibration;
+            core.selectedProfile.brakeSettings.MaxVibration = (int)Math.Floor(maxBrakeVibrationNumericUpDown.Value);
+            maxBrakeVibrationTrackBar.Value = core.selectedProfile.brakeSettings.MaxVibration;
         }
 
         private void vibrationSmoothingTrackBar_Scroll(object sender, EventArgs e)
         {
-            Core.selectedProfile.brakeSettings.VibrationSmoothing = NormalizeValue(vibrationSmoothingTrackBar.Value, 100);
+            core.selectedProfile.brakeSettings.VibrationSmoothing = NormalizeValue(vibrationSmoothingTrackBar.Value, 100);
             brakeVibrationSmoothNumericUpDown.Value = vibrationSmoothingTrackBar.Value;
         }
 
         private void brakeVibrationSmoothNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            Core.selectedProfile.brakeSettings.VibrationSmoothing = NormalizeValue((float)brakeVibrationSmoothNumericUpDown.Value, 100);
+            core.selectedProfile.brakeSettings.VibrationSmoothing = NormalizeValue((float)brakeVibrationSmoothNumericUpDown.Value, 100);
             vibrationSmoothingTrackBar.Value = (int)Math.Floor(brakeVibrationSmoothNumericUpDown.Value);
         }
 
         private void minBrakeStiffnessTrackBar_Scroll(object sender, EventArgs e)
         {
-            Core.selectedProfile.brakeSettings.MinStiffness = minBrakeStiffnessTrackBar.Value;
+            core.selectedProfile.brakeSettings.MinStiffness = minBrakeStiffnessTrackBar.Value;
             minBrakeStifnessNumericUpDown.Value = minBrakeStiffnessTrackBar.Value;
         }
 
         private void minBrakeStifnessNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            Core.selectedProfile.brakeSettings.MinStiffness = (int)Math.Floor(minBrakeVibrationNumericUpDown.Value);
-            minBrakeVibrationTrackBar.Value = Core.selectedProfile.brakeSettings.MinStiffness;
+            core.selectedProfile.brakeSettings.MinStiffness = (int)Math.Floor(minBrakeVibrationNumericUpDown.Value);
+            minBrakeVibrationTrackBar.Value = core.selectedProfile.brakeSettings.MinStiffness;
         }
 
         private void maxBrakeStiffnessTrackBar_Scroll(object sender, EventArgs e)
         {
-            Core.selectedProfile.brakeSettings.MaxStiffness = maxBrakeStiffnessTrackBar.Value;
+            core.selectedProfile.brakeSettings.MaxStiffness = maxBrakeStiffnessTrackBar.Value;
             maxBrakeStifnessNumericUpDown.Value = maxBrakeStiffnessTrackBar.Value;
         }
 
         private void maxBrakeStifnessNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            Core.selectedProfile.brakeSettings.MaxStiffness = (int)Math.Floor(maxBrakeVibrationNumericUpDown.Value);
-            maxBrakeVibrationTrackBar.Value = Core.selectedProfile.brakeSettings.MaxStiffness;
+            core.selectedProfile.brakeSettings.MaxStiffness = (int)Math.Floor(maxBrakeVibrationNumericUpDown.Value);
+            maxBrakeVibrationTrackBar.Value = core.selectedProfile.brakeSettings.MaxStiffness;
         }
 
         private void minBrakeResistanceTrackBar_Scroll(object sender, EventArgs e)
         {
             int value = minBrakeResistanceTrackBar.Value;
-            if (value > Core.selectedProfile.brakeSettings.MaxResistance)
-                value = Core.selectedProfile.brakeSettings.MaxResistance;
+            if (value > core.selectedProfile.brakeSettings.MaxResistance)
+                value = core.selectedProfile.brakeSettings.MaxResistance;
 
-            Core.selectedProfile.brakeSettings.MinResistance = value;
+            core.selectedProfile.brakeSettings.MinResistance = value;
 
             minBrakeResistanceTrackBar.Value = value;
             minBrakeResistanceNumericUpDown.Value = value;
@@ -524,10 +528,10 @@ namespace RacingDSX
         private void minBrakeResistanceNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             int value = (int)Math.Floor(minBrakeResistanceNumericUpDown.Value);
-            if (value > Core.selectedProfile.brakeSettings.MaxResistance)
-                value = Core.selectedProfile.brakeSettings.MaxResistance;
+            if (value > core.selectedProfile.brakeSettings.MaxResistance)
+                value = core.selectedProfile.brakeSettings.MaxResistance;
 
-            Core.selectedProfile.brakeSettings.MinResistance = value;
+            core.selectedProfile.brakeSettings.MinResistance = value;
 
             minBrakeResistanceTrackBar.Value = value;
             minBrakeResistanceNumericUpDown.Value = value;
@@ -537,10 +541,10 @@ namespace RacingDSX
         {
             int value = maxBrakeResistanceTrackBar.Value;
 
-            if (value < Core.selectedProfile.brakeSettings.MinResistance)
-                value = Core.selectedProfile.brakeSettings.MinResistance;
+            if (value < core.selectedProfile.brakeSettings.MinResistance)
+                value = core.selectedProfile.brakeSettings.MinResistance;
 
-            Core.selectedProfile.brakeSettings.MaxResistance = value;
+            core.selectedProfile.brakeSettings.MaxResistance = value;
             maxBrakeResistanceTrackBar.Value = value;
             maxBrakeResistanceNumericUpDown.Value = value;
         }
@@ -548,10 +552,10 @@ namespace RacingDSX
         private void maxBrakeResistanceNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             int value = (int)Math.Floor(maxBrakeResistanceNumericUpDown.Value);
-            if (value < Core.selectedProfile.brakeSettings.MinResistance)
-                value = Core.selectedProfile.brakeSettings.MinResistance;
+            if (value < core.selectedProfile.brakeSettings.MinResistance)
+                value = core.selectedProfile.brakeSettings.MinResistance;
 
-            Core.selectedProfile.brakeSettings.MaxResistance = value;
+            core.selectedProfile.brakeSettings.MaxResistance = value;
 
             maxBrakeResistanceTrackBar.Value = value;
             maxBrakeResistanceNumericUpDown.Value = value;
@@ -559,13 +563,13 @@ namespace RacingDSX
 
         private void brakeResistanceSmoothingTrackBar_Scroll(object sender, EventArgs e)
         {
-            Core.selectedProfile.brakeSettings.ResistanceSmoothing = NormalizeValue(brakeResistanceSmoothingTrackBar.Value, 100);
+            core.selectedProfile.brakeSettings.ResistanceSmoothing = NormalizeValue(brakeResistanceSmoothingTrackBar.Value, 100);
             brakeResistanceSmoothNumericUpDown.Value = brakeResistanceSmoothingTrackBar.Value;
         }
 
         private void brakeResistanceSmoothNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            Core.selectedProfile.brakeSettings.ResistanceSmoothing = NormalizeValue((float)brakeResistanceSmoothNumericUpDown.Value, 100);
+            core.selectedProfile.brakeSettings.ResistanceSmoothing = NormalizeValue((float)brakeResistanceSmoothNumericUpDown.Value, 100);
             brakeResistanceSmoothingTrackBar.Value = (int)Math.Floor(brakeResistanceSmoothNumericUpDown.Value);
         }
         #endregion
@@ -573,195 +577,195 @@ namespace RacingDSX
         #region Throttle
         private void throttleIntensityTrackBar_Scroll(object sender, EventArgs e)
         {
-            Core.selectedProfile.throttleSettings.EffectIntensity = NormalizeValue(throttleIntensityTrackBar.Value);
+            core.selectedProfile.throttleSettings.EffectIntensity = NormalizeValue(throttleIntensityTrackBar.Value);
             throttleIntensityNumericUpDown.Value = throttleIntensityTrackBar.Value;
         }
 
         private void throttleIntensityNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            Core.selectedProfile.throttleSettings.EffectIntensity = NormalizeValue((float)throttleIntensityNumericUpDown.Value);
+            core.selectedProfile.throttleSettings.EffectIntensity = NormalizeValue((float)throttleIntensityNumericUpDown.Value);
             throttleIntensityTrackBar.Value = (int)Math.Floor(throttleIntensityNumericUpDown.Value);
         }
 
         private void throttleGripLossTrackBar_Scroll(object sender, EventArgs e)
         {
             int value = throttleGripLossTrackBar.Value;
-            Core.selectedProfile.throttleSettings.GripLossValue = NormalizeValue(value);
+            core.selectedProfile.throttleSettings.GripLossValue = NormalizeValue(value);
             throttleGripLossNumericUpDown.Value = value;
         }
 
         private void throttleGripLossNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             float value = (float)throttleGripLossNumericUpDown.Value;
-            Core.selectedProfile.throttleSettings.GripLossValue = NormalizeValue(value);
+            core.selectedProfile.throttleSettings.GripLossValue = NormalizeValue(value);
             throttleGripLossTrackBar.Value = (int)Math.Floor(value);
         }
 
         private void throttleTurnAccelScaleTrackBar_Scroll(object sender, EventArgs e)
         {
             int value = throttleTurnAccelScaleTrackBar.Value;
-            Core.selectedProfile.throttleSettings.TurnAccelerationScale = NormalizeValue(value);
+            core.selectedProfile.throttleSettings.TurnAccelerationScale = NormalizeValue(value);
             throttleTurnAccelScaleNumericUpDown.Value = value;
         }
 
         private void throttleTurnAccelScaleNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             float value = (float)throttleTurnAccelScaleNumericUpDown.Value;
-            Core.selectedProfile.throttleSettings.TurnAccelerationScale = NormalizeValue(value);
+            core.selectedProfile.throttleSettings.TurnAccelerationScale = NormalizeValue(value);
             throttleTurnAccelScaleTrackBar.Value = (int)Math.Floor(value);
         }
 
         private void throttleForwardAccelScaleTrackBar_Scroll(object sender, EventArgs e)
         {
             int value = throttleForwardAccelScaleTrackBar.Value;
-            Core.selectedProfile.throttleSettings.ForwardAccelerationScale = NormalizeValue(value);
+            core.selectedProfile.throttleSettings.ForwardAccelerationScale = NormalizeValue(value);
             throttleForwardAccelScaleNumericUpDown.Value = value;
         }
 
         private void throttleForwardAccelScaleNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             float value = (float)throttleForwardAccelScaleNumericUpDown.Value;
-            Core.selectedProfile.throttleSettings.ForwardAccelerationScale = NormalizeValue(value);
+            core.selectedProfile.throttleSettings.ForwardAccelerationScale = NormalizeValue(value);
             throttleForwardAccelScaleTrackBar.Value = (int)Math.Floor(value);
         }
 
         private void throttleAccelLimitTrackBar_Scroll(object sender, EventArgs e)
         {
             int value = throttleAccelLimitTrackBar.Value;
-            Core.selectedProfile.throttleSettings.AccelerationLimit = value;
+            core.selectedProfile.throttleSettings.AccelerationLimit = value;
             throttleAccelLimitNumericUpDown.Value = value;
         }
 
         private void throttleAccelLimitNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             int value = (int)Math.Floor(throttleAccelLimitNumericUpDown.Value);
-            Core.selectedProfile.throttleSettings.AccelerationLimit = value;
+            core.selectedProfile.throttleSettings.AccelerationLimit = value;
             throttleAccelLimitTrackBar.Value = value;
         }
 
         private void throttleVibrationModeStartTrackBar_Scroll(object sender, EventArgs e)
         {
             int value = throttleVibrationModeStartTrackBar.Value;
-            Core.selectedProfile.throttleSettings.VibrationModeStart = value;
+            core.selectedProfile.throttleSettings.VibrationModeStart = value;
             throttleVibrationStartNumericUpDown.Value = value;
         }
 
         private void throttleVibrationStartNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             int value = (int)Math.Floor(throttleVibrationStartNumericUpDown.Value);
-            Core.selectedProfile.throttleSettings.VibrationModeStart = value;
+            core.selectedProfile.throttleSettings.VibrationModeStart = value;
             throttleVibrationModeStartTrackBar.Value = value;
         }
 
         private void throttleMinVibrationTrackBar_Scroll(object sender, EventArgs e)
         {
             int value = throttleMinVibrationTrackBar.Value;
-            Core.selectedProfile.throttleSettings.MinVibration = value;
+            core.selectedProfile.throttleSettings.MinVibration = value;
             throttleMinVibrationNumericUpDown.Value = value;
         }
 
         private void throttleMinVibrationNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             int value = (int)Math.Floor(throttleMinVibrationNumericUpDown.Value);
-            Core.selectedProfile.throttleSettings.MinVibration = value;
+            core.selectedProfile.throttleSettings.MinVibration = value;
             throttleMinVibrationTrackBar.Value = value;
         }
 
         private void throttleMaxVibrationTrackBar_Scroll(object sender, EventArgs e)
         {
             int value = throttleMaxVibrationTrackBar.Value;
-            Core.selectedProfile.throttleSettings.MaxVibration = value;
+            core.selectedProfile.throttleSettings.MaxVibration = value;
             throttleMaxVibrationNumericUpDown.Value = value;
         }
 
         private void throttleMaxVibrationNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             int value = (int)Math.Floor(throttleMaxVibrationNumericUpDown.Value);
-            Core.selectedProfile.throttleSettings.MaxVibration = value;
+            core.selectedProfile.throttleSettings.MaxVibration = value;
             throttleMaxVibrationTrackBar.Value = value;
         }
 
         private void throttleVibrationSmoothTrackBar_Scroll(object sender, EventArgs e)
         {
             int value = throttleVibrationSmoothTrackBar.Value;
-            Core.selectedProfile.throttleSettings.VibrationSmoothing = NormalizeValue(value);
+            core.selectedProfile.throttleSettings.VibrationSmoothing = NormalizeValue(value);
             throttleVibrationSmoothNumericUpDown.Value = value;
         }
 
         private void throttleVibrationSmoothNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             float value = (float)throttleVibrationSmoothNumericUpDown.Value;
-            Core.selectedProfile.throttleSettings.VibrationSmoothing = NormalizeValue(value);
+            core.selectedProfile.throttleSettings.VibrationSmoothing = NormalizeValue(value);
             throttleVibrationSmoothTrackBar.Value = (int)Math.Floor(value);
         }
 
         private void throttleMinStiffnessTrackBar_Scroll(object sender, EventArgs e)
         {
             int value = throttleMinStiffnessTrackBar.Value;
-            Core.selectedProfile.throttleSettings.MinStiffness = value;
+            core.selectedProfile.throttleSettings.MinStiffness = value;
             throttleMinStiffnessNumericUpDown.Value = value;
         }
 
         private void throttleMinStiffnessNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             int value = (int)Math.Floor(throttleMinStiffnessNumericUpDown.Value);
-            Core.selectedProfile.throttleSettings.MinStiffness = value;
+            core.selectedProfile.throttleSettings.MinStiffness = value;
             throttleMinStiffnessTrackBar.Value = value;
         }
 
         private void throttleMaxStiffnessTrackBar_Scroll(object sender, EventArgs e)
         {
             int value = throttleMaxStiffnessTrackBar.Value;
-            Core.selectedProfile.throttleSettings.MaxStiffness = value;
+            core.selectedProfile.throttleSettings.MaxStiffness = value;
             throttleMaxStiffnessNumericUpDown.Value = value;
         }
 
         private void throttleMaxStiffnessNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             int value = (int)Math.Floor(throttleMaxStiffnessNumericUpDown.Value);
-            Core.selectedProfile.throttleSettings.MaxStiffness = value;
+            core.selectedProfile.throttleSettings.MaxStiffness = value;
             throttleMaxStiffnessTrackBar.Value = value;
         }
 
         private void throttleMinResistanceTrackBar_Scroll(object sender, EventArgs e)
         {
             int value = throttleMinResistanceTrackBar.Value;
-            Core.selectedProfile.throttleSettings.MinResistance = value;
+            core.selectedProfile.throttleSettings.MinResistance = value;
             throttleMinResistanceNumericUpDown.Value = value;
         }
 
         private void throttleMinResistanceNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             int value = (int)Math.Floor(throttleMinResistanceNumericUpDown.Value);
-            Core.selectedProfile.throttleSettings.MinResistance = value;
+            core.selectedProfile.throttleSettings.MinResistance = value;
             throttleMinResistanceTrackBar.Value = value;
         }
 
         private void throttleMaxResistanceTrackBar_Scroll(object sender, EventArgs e)
         {
             int value = throttleMaxResistanceTrackBar.Value;
-            Core.selectedProfile.throttleSettings.MaxResistance = value;
+            core.selectedProfile.throttleSettings.MaxResistance = value;
             throttleMaxResistanceNumericUpDown.Value = value;
         }
 
         private void throttleMaxResistanceNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             int value = (int)Math.Floor(throttleMaxResistanceNumericUpDown.Value);
-            Core.selectedProfile.throttleSettings.MaxResistance = value;
+            core.selectedProfile.throttleSettings.MaxResistance = value;
             throttleMaxResistanceTrackBar.Value = value;
         }
 
         private void throttleResistanceSmoothTrackBar_Scroll(object sender, EventArgs e)
         {
             int value = throttleResistanceSmoothTrackBar.Value;
-            Core.selectedProfile.throttleSettings.ResistanceSmoothing = NormalizeValue(value);
+            core.selectedProfile.throttleSettings.ResistanceSmoothing = NormalizeValue(value);
             throttleResistanceSmoothNumericUpDown.Value = value;
         }
 
         private void throttleResistanceSmoothNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             float value = (float)throttleResistanceSmoothNumericUpDown.Value;
-            Core.selectedProfile.throttleSettings.ResistanceSmoothing = NormalizeValue(value);
+            core.selectedProfile.throttleSettings.ResistanceSmoothing = NormalizeValue(value);
             throttleResistanceSmoothTrackBar.Value = (int)Math.Floor(value);
         }
         #endregion
@@ -770,51 +774,51 @@ namespace RacingDSX
 
         private void buttonApplyMisc_Click(object sender, EventArgs e)
         {
-            if (Core.RacingDSXWorker != null)
+            if (core.RacingDSXWorker != null)
             {
-                Core.selectedProfile.executableNames = Core.executables.ToList();
+                core.selectedProfile.executableNames = core.executables.ToList();
 
-                Core.RacingDSXWorker.SetSettings(Core.CurrentSettings);
+                core.RacingDSXWorker.SetSettings(core.CurrentSettings);
                 ConfigHandler.SaveConfig();
-                Core.appCheckWorker.updateExecutables();
+                core.appCheckWorker.updateExecutables();
                 //RestartAppCheckThread();
             }
         }
 
         private void buttonApply_Brake_Click(object sender, EventArgs e)
         {
-            if (Core.RacingDSXWorker != null)
+            if (core.RacingDSXWorker != null)
             {
-                Core.RacingDSXWorker.SetSettings(Core.CurrentSettings);
+                core.RacingDSXWorker.SetSettings(core.CurrentSettings);
                 ConfigHandler.SaveConfig();
             }
         }
 
         private void buttonApply_Throttle_Click(object sender, EventArgs e)
         {
-            if (Core.RacingDSXWorker != null)
+            if (core.RacingDSXWorker != null)
             {
-                Core.RacingDSXWorker.SetSettings(Core.CurrentSettings);
+                core.RacingDSXWorker.SetSettings(core.CurrentSettings);
                 ConfigHandler.SaveConfig();
             }
         }
 
         private void miscDefaultsButton_Click(object sender, EventArgs e)
         {
-            Core.selectedProfile.RPMRedlineRatio = 0.9f;
-            Core.selectedProfile.gameUDPPort = 9999;
+            core.selectedProfile.RPMRedlineRatio = 0.9f;
+            core.selectedProfile.gameUDPPort = 9999;
             FullResetValues();
         }
 
         private void brakeDefaultsButton_Click(object sender, EventArgs e)
         {
-            Core.selectedProfile.brakeSettings = new BrakeSettings();
+            core.selectedProfile.brakeSettings = new BrakeSettings();
             FullResetValues();
         }
 
         private void throttleDefaultsButton_Click(object sender, EventArgs e)
         {
-            Core.selectedProfile.throttleSettings = new ThrottleSettings();
+            core.selectedProfile.throttleSettings = new ThrottleSettings();
             FullResetValues();
         }
 
@@ -824,34 +828,34 @@ namespace RacingDSX
 
             SetupUI();
 
-            if (Core.RacingDSXWorker != null)
+            if (core.RacingDSXWorker != null)
             {
                 // CurrentSettings.Save();
                 ConfigHandler.SaveConfig();
-                Core.RacingDSXWorker.SetSettings(Core.CurrentSettings);
+                core.RacingDSXWorker.SetSettings(core.CurrentSettings);
 
-                Core.StartRacingDSXThread();
+                core.StartRacingDSXThread();
             }
         }
 
         private void brakeTriggerModeComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            Core.selectedProfile.brakeSettings.TriggerMode = (Config.TriggerMode)(sbyte)brakeTriggerModeComboBox.SelectedIndex;
+            core.selectedProfile.brakeSettings.TriggerMode = (Config.TriggerMode)(sbyte)brakeTriggerModeComboBox.SelectedIndex;
         }
 
         private void throttleTriggerModeComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            Core.selectedProfile.throttleSettings.TriggerMode = (Config.TriggerMode)(sbyte)throttleTriggerModeComboBox.SelectedIndex;
+            core.selectedProfile.throttleSettings.TriggerMode = (Config.TriggerMode)(sbyte)throttleTriggerModeComboBox.SelectedIndex;
         }
 
         private void toolStripAppCheckOnItem_Click(object sender, EventArgs e)
         {
-            Core.currentSettings.DisableAppCheck = false;
+            core.currentSettings.DisableAppCheck = false;
             toolStripAppCheckOnItem.Checked = true;
             toolStripAppCheckOffItem.Checked = false;
             toolStripAppCheckButton.Text = "App Check Enabled";
             ConfigHandler.SaveConfig();
-            Core.RestartAppCheckThread();
+            core.RestartAppCheckThread();
         }
         private void toolStripAppCheckOffItem_Click(object sender, EventArgs e)
         {
@@ -862,15 +866,15 @@ namespace RacingDSX
         {
             try
             {
-                Core.currentSettings.DSXPort = Int32.Parse(toolStripDSXPortTextBox.Text);
+                core.currentSettings.DSXPort = Int32.Parse(toolStripDSXPortTextBox.Text);
                 ConfigHandler.SaveConfig();
 
             }
             catch (Exception)
             {
-                toolStripDSXPortTextBox.Text = Core.currentSettings.DSXPort.ToString();
+                toolStripDSXPortTextBox.Text = core.currentSettings.DSXPort.ToString();
             }
-            toolStripDSXPortButton.Text = "DSX Port: " + Core.currentSettings.DSXPort.ToString();
+            toolStripDSXPortButton.Text = "DSX Port: " + core.currentSettings.DSXPort.ToString();
         }
 
         private void toolStripDSXPortTextBox_KeyDown(object sender, KeyEventArgs e)
@@ -879,14 +883,14 @@ namespace RacingDSX
             {
                 try
                 {
-                    Core.currentSettings.DSXPort = Int32.Parse(toolStripDSXPortTextBox.Text);
+                    core.currentSettings.DSXPort = Int32.Parse(toolStripDSXPortTextBox.Text);
                     ConfigHandler.SaveConfig();
                 }
                 catch (Exception)
                 {
-                    toolStripDSXPortTextBox.Text = Core.currentSettings.DSXPort.ToString();
+                    toolStripDSXPortTextBox.Text = core.currentSettings.DSXPort.ToString();
                 }
-                toolStripDSXPortButton.Text = "DSX Port: " + Core.currentSettings.DSXPort.ToString();
+                toolStripDSXPortButton.Text = "DSX Port: " + core.currentSettings.DSXPort.ToString();
             }
         }
 
@@ -919,7 +923,7 @@ namespace RacingDSX
                     setActiveToolStripMenuItem.Enabled = true;
 
 
-                    if (Core.currentSettings.Profiles[HI.Item.Name].IsEnabled)
+                    if (core.currentSettings.Profiles[HI.Item.Name].IsEnabled)
                     {
                         disableToolStripMenuItem.Text = "Disable";
                     }
@@ -927,7 +931,7 @@ namespace RacingDSX
                     {
                         disableToolStripMenuItem.Text = "Enable";
                     }
-                    if (Core.currentSettings.Profiles[HI.Item.Name] == Core.currentSettings.ActiveProfile)
+                    if (core.currentSettings.Profiles[HI.Item.Name] == core.currentSettings.ActiveProfile)
                     {
                         setActiveToolStripMenuItem.CheckState = CheckState.Checked;
                     }
@@ -935,7 +939,7 @@ namespace RacingDSX
                     {
                         setActiveToolStripMenuItem.CheckState = CheckState.Unchecked;
                     }
-                    if (HI.Item.Name == Core.currentSettings.DefaultProfile)
+                    if (HI.Item.Name == core.currentSettings.DefaultProfile)
                     {
                         defaultToolStripMenuItem.CheckState = CheckState.Checked;
                     }
@@ -975,7 +979,7 @@ namespace RacingDSX
             String newProfileName = NameForm.ShowDialog("", "Please enter the Profile Name");
             if (newProfileName != "")
             {
-                if (Core.currentSettings.Profiles.ContainsKey(newProfileName))
+                if (core.currentSettings.Profiles.ContainsKey(newProfileName))
                 {
                     string message = "You cannot have a duplicate Profile Name!";
                     MessageBox.Show(message);
@@ -984,7 +988,7 @@ namespace RacingDSX
                 }
                 Profile newProfile = new Profile();
                 newProfile.Name = newProfileName;
-                Core.currentSettings.Profiles.Add(newProfileName, newProfile);
+                core.currentSettings.Profiles.Add(newProfileName, newProfile);
                 ConfigHandler.SaveConfig();
                 loadProfilesIntoList();
             }
@@ -996,17 +1000,17 @@ namespace RacingDSX
             String newProfileName = NameForm.ShowDialog(oldProfileName, "Please enter the Profile Name");
             if (newProfileName != "" && oldProfileName != newProfileName)
             {
-                if (Core.currentSettings.Profiles.ContainsKey(newProfileName))
+                if (core.currentSettings.Profiles.ContainsKey(newProfileName))
                 {
                     string message = "You cannot have a duplicate Profile Name!";
                     MessageBox.Show(message);
                     return;
 
                 }
-                Profile newProfile = Core.currentSettings.Profiles[oldProfileName];
-                Core.currentSettings.Profiles.Remove(oldProfileName);
+                Profile newProfile = core.currentSettings.Profiles[oldProfileName];
+                core.currentSettings.Profiles.Remove(oldProfileName);
                 newProfile.Name = newProfileName;
-                Core.currentSettings.Profiles.Add(newProfileName, newProfile);
+                core.currentSettings.Profiles.Add(newProfileName, newProfile);
                 ConfigHandler.SaveConfig();
                 loadProfilesIntoList();
             }
@@ -1015,14 +1019,14 @@ namespace RacingDSX
         private void disableToolStripMenuItem_Click(object sender, EventArgs e)
         {
             String profileName = clickedProfileName;
-            if (Core.currentSettings.Profiles.ContainsKey(profileName))
+            if (core.currentSettings.Profiles.ContainsKey(profileName))
             {
-                Profile profile = Core.currentSettings.Profiles[profileName];
+                Profile profile = core.currentSettings.Profiles[profileName];
                 profile.IsEnabled = !profile.IsEnabled;
                 //profile.IsEnabled = false;
                 ConfigHandler.SaveConfig();
                 loadProfilesIntoList();
-                Core.appCheckWorker.updateExecutables();
+                core.appCheckWorker.updateExecutables();
             }
 
         }
@@ -1030,9 +1034,9 @@ namespace RacingDSX
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             String profileName = clickedProfileName;
-            if (Core.currentSettings.Profiles.ContainsKey(profileName))
+            if (core.currentSettings.Profiles.ContainsKey(profileName))
             {
-                Core.currentSettings.Profiles.Remove(profileName);
+                core.currentSettings.Profiles.Remove(profileName);
                 ConfigHandler.SaveConfig();
                 loadProfilesIntoList();
             }
@@ -1046,9 +1050,9 @@ namespace RacingDSX
         private void defaultToolStripMenuItem_Click(object sender, EventArgs e)
         {
             String profileName = clickedProfileName;
-            if (Core.currentSettings.Profiles.ContainsKey(profileName))
+            if (core.currentSettings.Profiles.ContainsKey(profileName))
             {
-                Core.currentSettings.DefaultProfile = profileName;
+                core.currentSettings.DefaultProfile = profileName;
                 ConfigHandler.SaveConfig();
                 loadProfilesIntoList();
             }
@@ -1057,7 +1061,7 @@ namespace RacingDSX
         private void setActiveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             String profileName = clickedProfileName;
-            if (Core.currentSettings.Profiles.ContainsKey(profileName))
+            if (core.currentSettings.Profiles.ContainsKey(profileName))
             {
                 //currentSettings.ActiveProfile = currentSettings.Profiles[profileName];
                 disableAppCheck();
@@ -1070,7 +1074,7 @@ namespace RacingDSX
             String newExecutableName = NameForm.ShowDialog("", "Please enter the Executable Name"); ;
             if (newExecutableName != "")
             {
-                var prof = Core.currentSettings.Profiles.Values.Where(x => x.executableNames.Contains(newExecutableName));
+                var prof = core.currentSettings.Profiles.Values.Where(x => x.executableNames.Contains(newExecutableName));
                 if (prof.Count() > 0)
                 {
                     string message = "You cannot have a duplicate Executable Name! Executable already part of Profile " + prof.First().Name;
@@ -1078,7 +1082,7 @@ namespace RacingDSX
                     return;
 
                 }
-                Core.executables.Add(newExecutableName);
+                core.executables.Add(newExecutableName);
                 // ExecutableListBox.Items.Add(newExecutableName);
 
             }
@@ -1090,15 +1094,15 @@ namespace RacingDSX
             String newExecutableName = NameForm.ShowDialog(oldExecutableName, "Please enter the Executable Name"); ;
             if (newExecutableName != "")
             {
-                var prof = Core.currentSettings.Profiles.Values.Where(x => x.executableNames.Contains(newExecutableName));
+                var prof = core.currentSettings.Profiles.Values.Where(x => x.executableNames.Contains(newExecutableName));
                 if (prof.Count() > 0)
                 {
                     string message = "You cannot have a duplicate Executable Name! Executable already part of Profile " + prof.First().Name;
                     MessageBox.Show(message);
                     return;
                 }
-                int index = Core.selectedProfile.executableNames.IndexOf(oldExecutableName);
-                Core.executables[index] = newExecutableName;
+                int index = core.selectedProfile.executableNames.IndexOf(oldExecutableName);
+                core.executables[index] = newExecutableName;
                 // ExecutableListBox.SelectedIndex = -1;
                 // ExecutableListBox.Items.Add(newExecutableName);
 
@@ -1109,7 +1113,7 @@ namespace RacingDSX
         {
             String oldExecutableName = ExecutableListBox.SelectedItems[0].ToString();
 
-            Core.executables.Remove(oldExecutableName);
+            core.executables.Remove(oldExecutableName);
 
         }
 
@@ -1140,30 +1144,15 @@ namespace RacingDSX
             switch (GameModeComboBox.SelectedItem)
             {
                 case "Forza":
-                    Core.selectedProfile.GameType = GameTypes.Forza;
+                    core.selectedProfile.GameType = GameTypes.Forza;
                     break;
                 case "Dirt":
-                    Core.selectedProfile.GameType = GameTypes.Dirt;
+                    core.selectedProfile.GameType = GameTypes.Dirt;
                     break;
                 case "(None)":
-                    Core.selectedProfile.GameType = GameTypes.None;
+                    core.selectedProfile.GameType = GameTypes.None;
                     break;
             }
-
-        }
-
-        private void rpmLabel_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void profilesListView_SelectedIndexChanged_1(object sender, EventArgs e)
-        {
-
-        }
-
-        private void forzaPortLabel_Click(object sender, EventArgs e)
-        {
 
         }
     }

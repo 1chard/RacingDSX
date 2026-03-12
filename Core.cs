@@ -30,30 +30,16 @@ namespace RacingDSX
         public CancellationToken forzaThreadToken;
 
         public ManualResetEvent eventTimeoutAttach;
+        public string targetExecutableName = null;
 
         public bool bForzaOpenedOnceAttached = false;
-        public Process process = null;
+        readonly Process process;
 
         public void Join()
         {
             if (RacingDSXThread != null)
             {
                 RacingDSXThread.Join();
-            }
-        }
-
-        private void LoadSettings()
-        {
-            // Get values from the config given their key and their target type.
-            currentSettings = ConfigHandler.GetConfig();
-            selectedProfile = this.currentSettings.Profiles.Values.First();
-
-            if (currentSettings.DisableAppCheck && currentSettings.DefaultProfile != null)
-            {
-                if (currentSettings.Profiles.ContainsKey(currentSettings.DefaultProfile))
-                {
-                    currentSettings.ActiveProfile = currentSettings.Profiles[currentSettings.DefaultProfile];
-                }
             }
         }
 
@@ -66,16 +52,17 @@ namespace RacingDSX
             forzaThreadCancellationToken.Dispose();
         }
 
-        public Core(Process process)
+        public Core(Process process, RacingDSX.Config.Config config, RacingDSX.Config.Profile profile)
         {
             this.process = process;
             if (process != null)
             {
+                targetExecutableName = process.ProcessName;
                 bForzaOpenedOnceAttached = true;
             }
-            LoadSettings();
+            currentSettings = config;
+            selectedProfile = profile;
         }
-
 
         public void Initialize(Action<RacingDSXReportStruct> racingDsxHandler, Action<AppCheckReportStruct> appCheckHandler, Action appCloseHandler)
         {

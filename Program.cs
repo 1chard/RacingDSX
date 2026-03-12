@@ -1,13 +1,12 @@
-﻿using System;
+﻿using RacingDSX.Config;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading;
 using System.Windows.Forms;
 
 namespace RacingDSX
@@ -15,13 +14,16 @@ namespace RacingDSX
 
     public class Program
     {
-        public const String VERSION = "0.7.0";
+        public const String VERSION = "0.7.1";
         
         static void Main(string[] args)
         {
             bool isGuiMode = true;
-            bool followGame = false;
             Process process = null;
+
+            var configAndProfile = LoadSettings();
+            var config = configAndProfile.Key;
+            var profile = configAndProfile.Value;
 
             for (int i = 0; i < args.Length; i++)
             {
@@ -35,14 +37,19 @@ namespace RacingDSX
                             return;
                         }
                     case "--nogui":
-                    case "--cli":
+                    case "--headless":
                         {
                             isGuiMode = false;
                             break;
                         }
                     case "--attach":
                         {
-                            followGame = true;
+                            process = FindGameExists(profile.executableNames);
+                            if(process == null)
+                            {
+                                Console.WriteLine("Error: Could not find a process to attach to.");
+                                return;
+                            }
                             break;
                         }
                     case "--exe-attach":
@@ -55,8 +62,6 @@ namespace RacingDSX
                                 return;
                             }
 
-                            Console.WriteLine("Starting process: " + args[i]);
-
                             process = Process.Start(new ProcessStartInfo
                             {
                                 FileName = args[i],
@@ -64,7 +69,6 @@ namespace RacingDSX
                                 WorkingDirectory = Path.GetDirectoryName(args[i]),
                                 UseShellExecute = true
                             });
-                            Console.WriteLine($"Jogo iniciado: {process.ProcessName} ({process.Id})");
 
                             break;
                         }
@@ -76,35 +80,33 @@ namespace RacingDSX
                 }
             }
 
-            var core = new Core(process);
+            var core = new Core(process, config, profile);
 
-            if (followGame)
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new AppContext(core, isGuiMode));
+
+            core.close();
+        }
+
+        private static KeyValuePair<RacingDSX.Config.Config, RacingDSX.Config.Profile> LoadSettings()
+        {
+            // Get values from the config given their key and their target type.
+            var currentSettings = ConfigHandler.GetConfig();
+            var selectedProfile = currentSettings.Profiles.Values.First();
+
+            if (currentSettings.DisableAppCheck && currentSettings.DefaultProfile != null)
             {
-                Console.WriteLine("Trying to attach");
-                if (!TestGameExists(core.selectedProfile.executableNames))
+                if (currentSettings.Profiles.ContainsKey(currentSettings.DefaultProfile))
                 {
-                    Console.WriteLine("Failed to attach in 10 seconds");
-                    return;
-                } else
-                {
-                    core.bForzaOpenedOnceAttached = true;
-                    Console.WriteLine("Attached successfully");
+                    currentSettings.ActiveProfile = currentSettings.Profiles[currentSettings.DefaultProfile];
                 }
             }
 
-            if (isGuiMode)
-            {
-                Application.EnableVisualStyles();
-                Application.SetCompatibleTextRenderingDefault(false);
-                Application.Run(new UI(core));
-            }
-            else
-            {
-                new CLI(core);
-            }
+            return KeyValuePair.Create(currentSettings, selectedProfile);
         }
 
-        public static bool TestGameExists(List<string> executableNames)
+        private static Process FindGameExists(List<string> executableNames)
         {
             for (var i = 0; i < 10; i++)
             {
@@ -113,15 +115,15 @@ namespace RacingDSX
 
                 foreach (var processName in executableNames)
                 {
-
-                    if (Process.GetProcessesByName(processName).Length > 0)
+                    var processes = Process.GetProcessesByName(processName);
+                    if (processes.Length > 0)
                     {
-                        return true;
+                        return processes.First();
                     }
                 }
             }
 
-            return false;
+            return null;
         }
     }
 
