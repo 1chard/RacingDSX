@@ -24,11 +24,9 @@ namespace RacingDSX.Config
             configData ??= ReadConfigFromDisk();
             configData ??= new Config();
             configData = AddDefaultProfiles(configData);
+            UpgradeConfig(configData);
             SaveConfig();
         }
-
-
-
 
         private static Config AddDefaultProfiles(Config config)
         {
@@ -41,9 +39,9 @@ namespace RacingDSX.Config
                     gameUDPPort = 5300,
                     GameType = GameTypes.Forza,
                 };
-                profile.executableNames.AddRange(new string[] { "ForzaHorizon5", "ForzaHorizon4", "ForzaMotorsport7", "forza_gaming.desktop.x64_release_final", "forza_steamworks_release_final" });
+                profile.executableNames.AddRange(new string[] { "ForzaHorizon6", "ForzaHorizon5", "ForzaHorizon4", "ForzaMotorsport7", "forza_gaming.desktop.x64_release_final", "forza_steamworks_release_final" });
                 config.Profiles.Add("Forza", profile);
-            }
+            } 
             if (!config.Profiles.ContainsKey("Dirt"))
             {
                 Profile profile = new Profile
@@ -59,6 +57,27 @@ namespace RacingDSX.Config
 
             return config;
         }
+
+        private static void UpgradeConfig(Config config)
+        {
+            for(int i = 0; i < config.Profiles.Count; i++)
+            {
+                var profile = config.Profiles.ElementAt(i).Value;
+
+                switch (profile.Version) { // version < 0.7.2
+                    case null:
+                        profile.Version = Program.VERSION;
+                        if(profile.Name == "Forza") {
+                            if(!profile.executableNames.Contains("ForzaHorizon6", StringComparer.OrdinalIgnoreCase))
+                            {
+                                profile.executableNames.Add("ForzaHorizon6");
+                            }
+                        }
+                        break;
+                }
+            }
+        }
+
 
         private static Config ReadConfigFromDisk()
         {

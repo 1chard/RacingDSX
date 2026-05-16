@@ -1,2 +1,0 @@
-C:\Users\apple\RiderProjects\ForzaDSX\publish\ForzaDSX.dll.config
-C:\Users\apple\RiderProjects\ForzaDSX\publish\ForzaDSX.exe

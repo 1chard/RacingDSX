@@ -2,7 +2,6 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading;
 using static RacingDSX.RacingDSXWorker;
 
@@ -55,13 +54,14 @@ namespace RacingDSX
         public Core(Process process, RacingDSX.Config.Config config, RacingDSX.Config.Profile profile)
         {
             this.process = process;
+            currentSettings = config;
+            selectedProfile = profile;
+
             if (process != null)
             {
                 targetExecutableName = process.ProcessName;
                 bForzaOpenedOnceAttached = true;
             }
-            currentSettings = config;
-            selectedProfile = profile;
         }
 
         public void Initialize(Action<RacingDSXReportStruct> racingDsxHandler, Action<AppCheckReportStruct> appCheckHandler, Action appCloseHandler)
@@ -123,7 +123,7 @@ namespace RacingDSX
             appCheckThreadToken = appCheckThreadCancellationToken.Token;
 
             appCheckThreadToken.Register(() => appCheckWorker.Stop());
-            if (!currentSettings.DisableAppCheck)
+            if (!currentSettings.DisableAppCheck || targetExecutableName != null)
             {
                 startAppCheckThread();
             }

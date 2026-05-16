@@ -2209,14 +2209,14 @@ namespace RacingDSX
             // toolStripAppCheckOffItem
             // 
             toolStripAppCheckOffItem.Name = "toolStripAppCheckOffItem";
-            toolStripAppCheckOffItem.Size = new System.Drawing.Size(91, 22);
+            toolStripAppCheckOffItem.Size = new System.Drawing.Size(180, 22);
             toolStripAppCheckOffItem.Text = "Off";
             toolStripAppCheckOffItem.Click += toolStripAppCheckOffItem_Click;
             // 
             // toolStripAppCheckOnItem
             // 
             toolStripAppCheckOnItem.Name = "toolStripAppCheckOnItem";
-            toolStripAppCheckOnItem.Size = new System.Drawing.Size(91, 22);
+            toolStripAppCheckOnItem.Size = new System.Drawing.Size(180, 22);
             toolStripAppCheckOnItem.Text = "On";
             toolStripAppCheckOnItem.Click += toolStripAppCheckOnItem_Click;
             // 

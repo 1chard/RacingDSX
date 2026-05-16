@@ -14,7 +14,7 @@ namespace RacingDSX
 
     public class Program
     {
-        public const String VERSION = "0.7.1";
+        public const String VERSION = "0.7.2";
         
         static void Main(string[] args)
         {

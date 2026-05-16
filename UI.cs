@@ -75,7 +75,7 @@ namespace RacingDSX
 
             SetupUI();
 
-            if (core.currentSettings.DisableAppCheck)
+            if (core.currentSettings.DisableAppCheck && core.targetExecutableName == null)
             {
                 UpdateDSXConnectionStatus();
                 UpdateForzaConnectionStatus();
@@ -192,7 +192,11 @@ namespace RacingDSX
         #region UI Forms control
         void SetupUI()
         {
-            if (core.currentSettings.DisableAppCheck)
+            if (core.targetExecutableName != null) { 
+                toolStripAppCheckButton.Enabled = false;
+            }
+
+            if (core.currentSettings.DisableAppCheck && core.targetExecutableName == null)
             {
                 toolStripAppCheckOnItem.Checked = false;
                 toolStripAppCheckOffItem.Checked = true;

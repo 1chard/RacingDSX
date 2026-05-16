@@ -93,7 +93,7 @@ namespace RacingDSX
                 dsxConnectionMenuItem.Text = $"DSX Connection: {(core.bDsxConnected ? "On" : "Off")}";
                 forzaConnectionMenuItem.Text = $"Game Connection: {(core.bForzaConnected ? "On" : "Off")}";
                 udpForzaConnectionMenuItem.Text = $"UDP Game Connection: {(bConnectionUdp ? "On" : "Off")}";
-                appCheckMenuItem.Text = $"App Check: {(core.currentSettings.DisableAppCheck ? "Off" : "On")}";
+                appCheckMenuItem.Text = $"App Check: {(core.currentSettings.DisableAppCheck && core.targetExecutableName == null ? "Off" : "On")}";
 
                 await Task.Delay(1000);
             }
