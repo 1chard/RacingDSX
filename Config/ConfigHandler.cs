@@ -39,7 +39,7 @@ namespace RacingDSX.Config
                     gameUDPPort = 5300,
                     GameType = GameTypes.Forza,
                 };
-                profile.executableNames.AddRange(new string[] { "ForzaHorizon6", "ForzaHorizon5", "ForzaHorizon4", "ForzaMotorsport7", "forza_gaming.desktop.x64_release_final", "forza_steamworks_release_final" });
+                profile.executableNames.AddRange(new string[] { "forzahorizon6", "ForzaHorizon5", "ForzaHorizon4", "ForzaMotorsport7", "forza_gaming.desktop.x64_release_final", "forza_steamworks_release_final" });
                 config.Profiles.Add("Forza", profile);
             } 
             if (!config.Profiles.ContainsKey("Dirt"))
@@ -64,17 +64,25 @@ namespace RacingDSX.Config
             {
                 var profile = config.Profiles.ElementAt(i).Value;
 
-                switch (profile.Version) { // version < 0.7.2
-                    case null:
-                        profile.Version = Program.VERSION;
+                switch (profile.Version) { 
+                    case null: // version < 0.7.2
                         if(profile.Name == "Forza") {
-                            if(!profile.executableNames.Contains("ForzaHorizon6", StringComparer.OrdinalIgnoreCase))
-                            {
-                                profile.executableNames.Add("ForzaHorizon6");
+                            if(!profile.executableNames.Contains("forzahorizon6", StringComparer.OrdinalIgnoreCase)){
+                                profile.executableNames.Add("forzahorizon6");
+                            }
+                        }
+                        break;
+                    case "0.7.2": // set executableName "ForzaHorizon6" from 0.7.2 to lowercase, since game executable is actually lowercase
+                        if (profile.Name == "Forza"){
+                            if (profile.executableNames.Contains("ForzaHorizon6", StringComparer.OrdinalIgnoreCase)){
+                                profile.executableNames.RemoveAll(name => string.Equals(name, "ForzaHorizon6", StringComparison.OrdinalIgnoreCase));
+                                profile.executableNames.Add("forzahorizon6");
                             }
                         }
                         break;
                 }
+
+                profile.Version = Program.VERSION;
             }
         }
 

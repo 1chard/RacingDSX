@@ -43,7 +43,7 @@ namespace RacingDSX
 	public class AppCheckThread
 	{
 		readonly RacingDSX.Config.Config settings;
-		private Dictionary<String, String> processProfilePairs = new Dictionary<string, string>();
+		private Dictionary<String, String> processProfilePairs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		private Process process;
 
         readonly IProgress<AppCheckReportStruct> progressReporter;

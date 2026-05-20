@@ -1078,7 +1078,7 @@ namespace RacingDSX
             String newExecutableName = NameForm.ShowDialog("", "Please enter the Executable Name"); ;
             if (newExecutableName != "")
             {
-                var prof = core.currentSettings.Profiles.Values.Where(x => x.executableNames.Contains(newExecutableName));
+                var prof = core.currentSettings.Profiles.Values.Where(x => x.executableNames.Contains(newExecutableName, StringComparer.OrdinalIgnoreCase));
                 if (prof.Count() > 0)
                 {
                     string message = "You cannot have a duplicate Executable Name! Executable already part of Profile " + prof.First().Name;
@@ -1098,7 +1098,7 @@ namespace RacingDSX
             String newExecutableName = NameForm.ShowDialog(oldExecutableName, "Please enter the Executable Name"); ;
             if (newExecutableName != "")
             {
-                var prof = core.currentSettings.Profiles.Values.Where(x => x.executableNames.Contains(newExecutableName));
+                var prof = core.currentSettings.Profiles.Values.Where(x => x.executableNames.Contains(newExecutableName, StringComparer.OrdinalIgnoreCase));
                 if (prof.Count() > 0)
                 {
                     string message = "You cannot have a duplicate Executable Name! Executable already part of Profile " + prof.First().Name;
