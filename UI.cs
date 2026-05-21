@@ -22,6 +22,8 @@ namespace RacingDSX
             this.core = core;
 
             InitializeComponent();
+
+            SetTheme(core.currentSettings.Theme);
         }
 
         public void SetUDPForzaConnectionStatus(bool val)
@@ -80,6 +82,26 @@ namespace RacingDSX
                 UpdateDSXConnectionStatus();
                 UpdateForzaConnectionStatus();
             }
+        }
+
+        private void SetTheme(Theme theme)
+        {
+            ThemeManager.CurrentTheme = theme switch
+            {
+                Theme.Auto => ThemeManager.IsDarkMode() ? Themes.Dark : Themes.Light,
+                Theme.Light => Themes.Light,
+                Theme.Dark => Themes.Dark,
+                Theme.Plain => Themes.Plain,
+            };
+
+            toolStripThemeAuto.Checked = theme == Theme.Auto;
+            toolStripThemeDark.Checked = theme == Theme.Dark;
+            toolStripThemeLight.Checked = theme == Theme.Light;
+            toolStripThemePlain.Checked = theme == Theme.Plain;
+
+            ThemeManager.ApplyTheme(this);
+            core.currentSettings.Theme = theme;
+            ConfigHandler.SaveConfig();
         }
 
         public void AppCheckReporter(AppCheckReportStruct value)
@@ -192,7 +214,8 @@ namespace RacingDSX
         #region UI Forms control
         void SetupUI()
         {
-            if (core.targetExecutableName != null) { 
+            if (core.targetExecutableName != null)
+            {
                 toolStripAppCheckButton.Enabled = false;
             }
 
@@ -1158,6 +1181,26 @@ namespace RacingDSX
                     break;
             }
 
+        }
+
+        private void toolStripThemePlain_Click(object sender, EventArgs e)
+        {
+            SetTheme(Theme.Plain);
+        }
+
+        private void toolStripThemeLight_Click(object sender, EventArgs e)
+        {
+            SetTheme(Theme.Light);
+        }
+
+        private void toolStripThemeDark_Click(object sender, EventArgs e)
+        {
+            SetTheme(Theme.Dark);
+        }
+
+        private void toolStripThemeAuto_Click(object sender, EventArgs e)
+        {
+            SetTheme(Theme.Auto);
         }
     }
 }

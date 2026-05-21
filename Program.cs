@@ -8,13 +8,14 @@ using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 
 namespace RacingDSX
 {
 
     public class Program
     {
-        public const string VERSION = "0.7.3";
+        public const string VERSION = "0.7.4";
         
         static void Main(string[] args)
         {

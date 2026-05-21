@@ -11,6 +11,9 @@ namespace RacingDSX.Config
     {
         public bool DisableAppCheck { get; set; }
         public VerboseLevel VerboseLevel { get; set; } = VerboseLevel.Off;
+
+        public Theme Theme { get; set; } = Theme.Auto;
+
         public Dictionary<String, Profile> Profiles { get; set; } = new Dictionary<String, Profile>();
         [JsonIgnore]
         public Profile ActiveProfile { get; set; } = null;
