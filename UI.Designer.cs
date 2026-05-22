@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RacingDSX.Graphics;
+using System;
 using System.ComponentModel;
 
 namespace RacingDSX
@@ -32,8 +33,8 @@ namespace RacingDSX
         private void InitializeComponent()
         {
             components = new Container();
-            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("test");
-            System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("test2");
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("test");
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("test2");
             ComponentResourceManager resources = new ComponentResourceManager(typeof(UI));
             mainPanel = new System.Windows.Forms.Panel();
             mainSplitContainer = new System.Windows.Forms.SplitContainer();
@@ -306,7 +307,7 @@ namespace RacingDSX
             // 
             profilesListView.Dock = System.Windows.Forms.DockStyle.Fill;
             profilesListView.FullRowSelect = true;
-            profilesListView.Items.AddRange(new System.Windows.Forms.ListViewItem[] { listViewItem5, listViewItem6 });
+            profilesListView.Items.AddRange(new System.Windows.Forms.ListViewItem[] { listViewItem1, listViewItem2 });
             profilesListView.Location = new System.Drawing.Point(2, 18);
             profilesListView.Margin = new System.Windows.Forms.Padding(2);
             profilesListView.MultiSelect = false;
@@ -505,7 +506,7 @@ namespace RacingDSX
             AddExecutableButton.Location = new System.Drawing.Point(2, 2);
             AddExecutableButton.Margin = new System.Windows.Forms.Padding(2);
             AddExecutableButton.Name = "AddExecutableButton";
-            AddExecutableButton.Size = new System.Drawing.Size(79, 20);
+            AddExecutableButton.Size = new System.Drawing.Size(79, 22);
             AddExecutableButton.TabIndex = 0;
             AddExecutableButton.Text = "Add";
             AddExecutableButton.UseVisualStyleBackColor = false;
@@ -514,10 +515,10 @@ namespace RacingDSX
             // EditExecutableButton
             // 
             EditExecutableButton.BackColor = System.Drawing.Color.Transparent;
-            EditExecutableButton.Location = new System.Drawing.Point(2, 26);
+            EditExecutableButton.Location = new System.Drawing.Point(2, 28);
             EditExecutableButton.Margin = new System.Windows.Forms.Padding(2);
             EditExecutableButton.Name = "EditExecutableButton";
-            EditExecutableButton.Size = new System.Drawing.Size(79, 20);
+            EditExecutableButton.Size = new System.Drawing.Size(79, 22);
             EditExecutableButton.TabIndex = 1;
             EditExecutableButton.Text = "Edit";
             EditExecutableButton.UseVisualStyleBackColor = false;
@@ -525,10 +526,10 @@ namespace RacingDSX
             // 
             // RemoveExecutableButton
             // 
-            RemoveExecutableButton.Location = new System.Drawing.Point(2, 50);
+            RemoveExecutableButton.Location = new System.Drawing.Point(2, 54);
             RemoveExecutableButton.Margin = new System.Windows.Forms.Padding(2);
             RemoveExecutableButton.Name = "RemoveExecutableButton";
-            RemoveExecutableButton.Size = new System.Drawing.Size(79, 20);
+            RemoveExecutableButton.Size = new System.Drawing.Size(79, 22);
             RemoveExecutableButton.TabIndex = 2;
             RemoveExecutableButton.Text = "Remove";
             RemoveExecutableButton.UseVisualStyleBackColor = false;
@@ -1829,7 +1830,7 @@ namespace RacingDSX
             buttonApply_Throttle.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             buttonApply_Throttle.Location = new System.Drawing.Point(141, 746);
             buttonApply_Throttle.Name = "buttonApply_Throttle";
-            buttonApply_Throttle.Size = new System.Drawing.Size(404, 22);
+            buttonApply_Throttle.Size = new System.Drawing.Size(404, 24);
             buttonApply_Throttle.TabIndex = 43;
             buttonApply_Throttle.Text = "Apply";
             buttonApply_Throttle.UseVisualStyleBackColor = false;
@@ -1839,7 +1840,7 @@ namespace RacingDSX
             // 
             throttleDefaultsButton.Location = new System.Drawing.Point(551, 746);
             throttleDefaultsButton.Name = "throttleDefaultsButton";
-            throttleDefaultsButton.Size = new System.Drawing.Size(75, 22);
+            throttleDefaultsButton.Size = new System.Drawing.Size(75, 24);
             throttleDefaultsButton.TabIndex = 44;
             throttleDefaultsButton.Text = "Defaults";
             throttleDefaultsButton.UseVisualStyleBackColor = false;
@@ -2055,14 +2056,14 @@ namespace RacingDSX
             // toolStripAppCheckOffItem
             // 
             toolStripAppCheckOffItem.Name = "toolStripAppCheckOffItem";
-            toolStripAppCheckOffItem.Size = new System.Drawing.Size(91, 22);
+            toolStripAppCheckOffItem.Size = new System.Drawing.Size(180, 22);
             toolStripAppCheckOffItem.Text = "Off";
             toolStripAppCheckOffItem.Click += toolStripAppCheckOffItem_Click;
             // 
             // toolStripAppCheckOnItem
             // 
             toolStripAppCheckOnItem.Name = "toolStripAppCheckOnItem";
-            toolStripAppCheckOnItem.Size = new System.Drawing.Size(91, 22);
+            toolStripAppCheckOnItem.Size = new System.Drawing.Size(180, 22);
             toolStripAppCheckOnItem.Text = "On";
             toolStripAppCheckOnItem.Click += toolStripAppCheckOnItem_Click;
             // 

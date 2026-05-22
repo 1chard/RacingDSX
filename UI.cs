@@ -1,5 +1,6 @@
 ﻿using RacingDSX.Config;
 using RacingDSX.GameParsers;
+using RacingDSX.Graphics;
 using RacingDSX.Properties;
 using System;
 using System.ComponentModel;
