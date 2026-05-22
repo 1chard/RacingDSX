@@ -19,5 +19,6 @@ namespace RacingDSX.Graphics
         public int ButtonAppearanceBorderSize { get; set; }
         public Color ButtonAppearanceBorderColor { get; set; }
         public Color ButtonAppearanceMouseOverBackColor { get; set; }
+        public bool UseCustomMenuRenderer { get; set; }
     }
 }

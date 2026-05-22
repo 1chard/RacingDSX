@@ -16,7 +16,8 @@ namespace RacingDSX.Graphics
             ButtonForeColor = SystemColors.ControlText,
             TextBoxBackColor = SystemColors.Window,
             TextBoxForeColor = SystemColors.WindowText,
-            ButtonFlatStyle = FlatStyle.Standard
+            ButtonFlatStyle = FlatStyle.Standard,
+            UseCustomMenuRenderer = false
         };
 
         public static readonly ThemeObject Dark = new()
@@ -33,6 +34,7 @@ namespace RacingDSX.Graphics
             ButtonFlatStyle = FlatStyle.Flat,
             ButtonAppearanceBorderSize = 0,
             ButtonAppearanceMouseOverBackColor = Color.FromArgb(60, 60, 60),
+            UseCustomMenuRenderer = true
         };
 
         public static readonly ThemeObject Light = new()
@@ -50,6 +52,25 @@ namespace RacingDSX.Graphics
             ButtonAppearanceBorderSize = 1,
             ButtonAppearanceBorderColor = Color.DarkGray,
             ButtonAppearanceMouseOverBackColor = Color.FromArgb(220, 220, 220),
+            UseCustomMenuRenderer = true
+        };
+
+        public static readonly ThemeObject Amoled = new()
+        {
+            BackColor = Color.FromArgb(0, 0, 0),
+            SurfaceColor = Color.FromArgb(18, 18, 18),
+            ForeColor = Color.FromArgb(245, 245, 245),
+            BorderColor = Color.FromArgb(35, 35, 35),
+            AccentColor = Color.FromArgb(0, 120, 215),
+            ButtonBackColor = Color.FromArgb(20, 20, 20),
+            ButtonForeColor = Color.FromArgb(245, 245, 245),
+            TextBoxBackColor = Color.FromArgb(10, 10, 10),
+            TextBoxForeColor = Color.FromArgb(245, 245, 245),
+            ButtonFlatStyle = FlatStyle.Flat,
+            ButtonAppearanceBorderSize = 1,
+            ButtonAppearanceBorderColor = Color.FromArgb(35, 35, 35),
+            ButtonAppearanceMouseOverBackColor = Color.FromArgb(35, 35, 35),
+            UseCustomMenuRenderer = true
         };
     }
 }

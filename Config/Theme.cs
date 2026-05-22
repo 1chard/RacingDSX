@@ -12,5 +12,6 @@ namespace RacingDSX.Config
         Light = 1,
         Dark = 2,
         Plain = 3,
+        Amoled = 4
     }
 }

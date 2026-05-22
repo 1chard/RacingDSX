@@ -93,12 +93,14 @@ namespace RacingDSX
                 Theme.Light => Themes.Light,
                 Theme.Dark => Themes.Dark,
                 Theme.Plain => Themes.Plain,
+                Theme.Amoled => Themes.Amoled,
             };
 
             toolStripThemeAuto.Checked = theme == Theme.Auto;
             toolStripThemeDark.Checked = theme == Theme.Dark;
             toolStripThemeLight.Checked = theme == Theme.Light;
             toolStripThemePlain.Checked = theme == Theme.Plain;
+            toolStripThemeAmoled.Checked = theme == Theme.Amoled;
 
             ThemeManager.ApplyTheme(this);
             core.currentSettings.Theme = theme;
@@ -1197,6 +1199,11 @@ namespace RacingDSX
         private void toolStripThemeDark_Click(object sender, EventArgs e)
         {
             SetTheme(Theme.Dark);
+        }
+
+        private void toolStripThemeAmoled_Click(object sender, EventArgs e)
+        {
+            SetTheme(Theme.Amoled);
         }
 
         private void toolStripThemeAuto_Click(object sender, EventArgs e)

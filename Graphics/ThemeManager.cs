@@ -59,7 +59,14 @@ namespace RacingDSX.Graphics
                 {
                     if(item is ToolStripDropDownButton dropdownButton)
                     {
-                        dropdownButton.Owner.Renderer = new MenuRenderer(CurrentTheme.BackColor, CurrentTheme.ButtonAppearanceMouseOverBackColor, CurrentTheme.ForeColor);
+                        if(CurrentTheme.UseCustomMenuRenderer)
+                        {
+                            dropdownButton.Owner.Renderer = new MenuRenderer(CurrentTheme.BackColor, CurrentTheme.ButtonAppearanceMouseOverBackColor, CurrentTheme.ForeColor);
+                        } else
+                        {
+                            dropdownButton.Owner.RenderMode = ToolStripRenderMode.System;
+                            dropdownButton.Owner.Renderer = null;
+                        }
                     }
                 }
             }

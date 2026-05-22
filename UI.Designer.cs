@@ -175,6 +175,7 @@ namespace RacingDSX
             toolStripThemePlain = new System.Windows.Forms.ToolStripMenuItem();
             toolStripThemeLight = new System.Windows.Forms.ToolStripMenuItem();
             toolStripThemeDark = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripThemeAmoled = new System.Windows.Forms.ToolStripMenuItem();
             toolStripThemeAuto = new System.Windows.Forms.ToolStripMenuItem();
             toolTip = new System.Windows.Forms.ToolTip(components);
             ProfilesContextMenu = new System.Windows.Forms.ContextMenuStrip(components);
@@ -565,6 +566,7 @@ namespace RacingDSX
             brakeConfigTabPage.Controls.Add(brakeTableLayoutPanel);
             brakeConfigTabPage.Location = new System.Drawing.Point(4, 24);
             brakeConfigTabPage.Name = "brakeConfigTabPage";
+            brakeConfigTabPage.Padding = new System.Windows.Forms.Padding(3);
             brakeConfigTabPage.Size = new System.Drawing.Size(1119, 576);
             brakeConfigTabPage.TabIndex = 4;
             brakeConfigTabPage.Text = "Brake Trigger";
@@ -619,7 +621,7 @@ namespace RacingDSX
             brakeTableLayoutPanel.Controls.Add(brakeTriggerMode, 0, 0);
             brakeTableLayoutPanel.Controls.Add(brakeTriggerModeComboBox, 1, 0);
             brakeTableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            brakeTableLayoutPanel.Location = new System.Drawing.Point(0, 0);
+            brakeTableLayoutPanel.Location = new System.Drawing.Point(3, 3);
             brakeTableLayoutPanel.Name = "brakeTableLayoutPanel";
             brakeTableLayoutPanel.RowCount = 15;
             brakeTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -637,7 +639,7 @@ namespace RacingDSX
             brakeTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             brakeTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
             brakeTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 8F));
-            brakeTableLayoutPanel.Size = new System.Drawing.Size(1119, 576);
+            brakeTableLayoutPanel.Size = new System.Drawing.Size(1113, 570);
             brakeTableLayoutPanel.TabIndex = 0;
             // 
             // brakeResistanceSmoothNumericUpDown
@@ -2056,21 +2058,21 @@ namespace RacingDSX
             // toolStripAppCheckOffItem
             // 
             toolStripAppCheckOffItem.Name = "toolStripAppCheckOffItem";
-            toolStripAppCheckOffItem.Size = new System.Drawing.Size(180, 22);
+            toolStripAppCheckOffItem.Size = new System.Drawing.Size(91, 22);
             toolStripAppCheckOffItem.Text = "Off";
             toolStripAppCheckOffItem.Click += toolStripAppCheckOffItem_Click;
             // 
             // toolStripAppCheckOnItem
             // 
             toolStripAppCheckOnItem.Name = "toolStripAppCheckOnItem";
-            toolStripAppCheckOnItem.Size = new System.Drawing.Size(180, 22);
+            toolStripAppCheckOnItem.Size = new System.Drawing.Size(91, 22);
             toolStripAppCheckOnItem.Text = "On";
             toolStripAppCheckOnItem.Click += toolStripAppCheckOnItem_Click;
             // 
             // toolStripTheme
             // 
             toolStripTheme.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            toolStripTheme.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripThemePlain, toolStripThemeLight, toolStripThemeDark, toolStripThemeAuto });
+            toolStripTheme.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripThemePlain, toolStripThemeLight, toolStripThemeDark, toolStripThemeAmoled, toolStripThemeAuto });
             toolStripTheme.ImageTransparentColor = System.Drawing.Color.Magenta;
             toolStripTheme.Name = "toolStripTheme";
             toolStripTheme.Size = new System.Drawing.Size(57, 27);
@@ -2097,6 +2099,13 @@ namespace RacingDSX
             toolStripThemeDark.Size = new System.Drawing.Size(149, 22);
             toolStripThemeDark.Text = "Dark";
             toolStripThemeDark.Click += toolStripThemeDark_Click;
+            // 
+            // toolStripThemeAmoled
+            // 
+            toolStripThemeAmoled.Name = "toolStripThemeAmoled";
+            toolStripThemeAmoled.Size = new System.Drawing.Size(149, 22);
+            toolStripThemeAmoled.Text = "AMOLED";
+            toolStripThemeAmoled.Click += toolStripThemeAmoled_Click;
             // 
             // toolStripThemeAuto
             // 
@@ -2410,5 +2419,6 @@ namespace RacingDSX
         private System.Windows.Forms.ToolStripMenuItem toolStripThemeLight;
         private System.Windows.Forms.ToolStripMenuItem toolStripThemeDark;
         private System.Windows.Forms.ToolStripMenuItem toolStripThemeAuto;
+        private System.Windows.Forms.ToolStripMenuItem toolStripThemeAmoled;
     }
 }
