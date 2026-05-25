@@ -3,6 +3,7 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 using static RacingDSX.RacingDSXWorker;
 
 namespace RacingDSX
@@ -125,7 +126,7 @@ namespace RacingDSX
             appCheckThreadToken.Register(() => appCheckWorker.Stop());
             if (!currentSettings.DisableAppCheck || targetExecutableName != null)
             {
-                startAppCheckThread();
+                StartAppCheckThread();
             }
             else
             {
@@ -192,7 +193,7 @@ namespace RacingDSX
         public void RestartAppCheckThread()
         {
             StopAppCheckThread();
-            startAppCheckThread();
+            StartAppCheckThread();
         }
 
         public void StopAppCheckThread()
@@ -213,7 +214,7 @@ namespace RacingDSX
             appCheckThread = null;
         }
 
-        protected void startAppCheckThread()
+        protected void StartAppCheckThread()
         {
             appCheckThread = new Thread(new ThreadStart(appCheckWorker.Run));
             appCheckThread.IsBackground = true;

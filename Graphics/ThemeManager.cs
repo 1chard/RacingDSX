@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -30,6 +31,17 @@ namespace RacingDSX.Graphics
             ApplyToControl(control);
 
             Resume(control);
+
+            ChangeBar(control);
+        }
+
+        private static void ChangeBar(Control control)
+        {
+            int color = ColorTranslator.ToWin32(CurrentTheme.BackColor);
+            DwmSetWindowAttribute(control.Handle, DWMWA_CAPTION_COLOR, ref color, sizeof(int));
+
+            int textColor = ColorTranslator.ToWin32(CurrentTheme.ForeColor);
+            DwmSetWindowAttribute(control.Handle, DWMWA_TEXT_COLOR, ref textColor, sizeof(int));
         }
 
         private static void ApplyToControl(Control control)
@@ -57,12 +69,13 @@ namespace RacingDSX.Graphics
             {
                 foreach (ToolStripItem item in toolStrip.Items)
                 {
-                    if(item is ToolStripDropDownButton dropdownButton)
+                    if (item is ToolStripDropDownButton dropdownButton)
                     {
-                        if(CurrentTheme.UseCustomMenuRenderer)
+                        if (CurrentTheme.UseCustomMenuRenderer)
                         {
                             dropdownButton.Owner.Renderer = new MenuRenderer(CurrentTheme.BackColor, CurrentTheme.ButtonAppearanceMouseOverBackColor, CurrentTheme.ForeColor);
-                        } else
+                        }
+                        else
                         {
                             dropdownButton.Owner.RenderMode = ToolStripRenderMode.System;
                             dropdownButton.Owner.Renderer = null;
@@ -71,7 +84,8 @@ namespace RacingDSX.Graphics
                 }
             }
 
-            if (control is CustomTabControl customTabControl) { 
+            if (control is CustomTabControl customTabControl)
+            {
                 customTabControl.TabBackColor = CurrentTheme.SurfaceColor;
                 customTabControl.TabTextColor = CurrentTheme.ForeColor;
                 customTabControl.SelectedTabColor = CurrentTheme.AccentColor;
@@ -84,7 +98,7 @@ namespace RacingDSX.Graphics
             }
         }
 
-        private static void Suspend(Control control) 
+        private static void Suspend(Control control)
         {
             control.SuspendLayout();
 
@@ -116,5 +130,10 @@ namespace RacingDSX.Graphics
 
             return false;
         }
+
+        const int DWMWA_CAPTION_COLOR = 35;
+        const int DWMWA_TEXT_COLOR = 36;
+        [DllImport("dwmapi.dll")]
+        static extern int DwmSetWindowAttribute(IntPtr hwnd, int dwAttribute, ref int pvAttribute, int cbAttribute);
     }
 }
