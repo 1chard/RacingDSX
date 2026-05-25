@@ -71,6 +71,13 @@ namespace RacingDSX.Graphics
                 }
             }
 
+            if (control is CustomTabControl customTabControl) { 
+                customTabControl.TabBackColor = CurrentTheme.SurfaceColor;
+                customTabControl.TabTextColor = CurrentTheme.ForeColor;
+                customTabControl.SelectedTabColor = CurrentTheme.AccentColor;
+                customTabControl.SelectedTextColor = CurrentTheme.AccentTextColor;
+            }
+
             foreach (Control child in control.Controls)
             {
                 ApplyToControl(child);

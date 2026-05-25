@@ -40,7 +40,7 @@ namespace RacingDSX
             mainSplitContainer = new System.Windows.Forms.SplitContainer();
             profilesGroupBox = new System.Windows.Forms.GroupBox();
             profilesListView = new System.Windows.Forms.ListView();
-            mainTabControl = new System.Windows.Forms.TabControl();
+            mainTabControl = new CustomTabControl();
             miscTabPage = new System.Windows.Forms.TabPage();
             miscTableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             forzaPortNumericUpDown = new System.Windows.Forms.NumericUpDown();
@@ -326,19 +326,24 @@ namespace RacingDSX
             mainTabControl.Controls.Add(throttleConfigTabPage);
             mainTabControl.Controls.Add(outputTabPage);
             mainTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            mainTabControl.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             mainTabControl.Location = new System.Drawing.Point(0, 0);
             mainTabControl.Name = "mainTabControl";
+            mainTabControl.Padding = new System.Drawing.Point(6, 2);
             mainTabControl.SelectedIndex = 0;
+            mainTabControl.SelectedTabColor = System.Drawing.SystemColors.Highlight;
             mainTabControl.Size = new System.Drawing.Size(1127, 604);
+            mainTabControl.TabBackColor = System.Drawing.SystemColors.ControlLight;
             mainTabControl.TabIndex = 0;
+            mainTabControl.TabTextColor = System.Drawing.SystemColors.ControlText;
             // 
             // miscTabPage
             // 
             miscTabPage.Controls.Add(miscTableLayoutPanel);
-            miscTabPage.Location = new System.Drawing.Point(4, 24);
+            miscTabPage.Location = new System.Drawing.Point(4, 23);
             miscTabPage.Name = "miscTabPage";
             miscTabPage.Padding = new System.Windows.Forms.Padding(3);
-            miscTabPage.Size = new System.Drawing.Size(1119, 576);
+            miscTabPage.Size = new System.Drawing.Size(1119, 577);
             miscTabPage.TabIndex = 3;
             miscTabPage.Text = "Misc";
             miscTabPage.UseVisualStyleBackColor = true;
@@ -375,7 +380,7 @@ namespace RacingDSX
             miscTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             miscTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             miscTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            miscTableLayoutPanel.Size = new System.Drawing.Size(1113, 570);
+            miscTableLayoutPanel.Size = new System.Drawing.Size(1113, 571);
             miscTableLayoutPanel.TabIndex = 0;
             // 
             // forzaPortNumericUpDown
@@ -564,10 +569,10 @@ namespace RacingDSX
             // brakeConfigTabPage
             // 
             brakeConfigTabPage.Controls.Add(brakeTableLayoutPanel);
-            brakeConfigTabPage.Location = new System.Drawing.Point(4, 24);
+            brakeConfigTabPage.Location = new System.Drawing.Point(4, 23);
             brakeConfigTabPage.Name = "brakeConfigTabPage";
             brakeConfigTabPage.Padding = new System.Windows.Forms.Padding(3);
-            brakeConfigTabPage.Size = new System.Drawing.Size(1119, 576);
+            brakeConfigTabPage.Size = new System.Drawing.Size(1119, 577);
             brakeConfigTabPage.TabIndex = 4;
             brakeConfigTabPage.Text = "Brake Trigger";
             // 
@@ -639,7 +644,7 @@ namespace RacingDSX
             brakeTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             brakeTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
             brakeTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 8F));
-            brakeTableLayoutPanel.Size = new System.Drawing.Size(1113, 570);
+            brakeTableLayoutPanel.Size = new System.Drawing.Size(1113, 571);
             brakeTableLayoutPanel.TabIndex = 0;
             // 
             // brakeResistanceSmoothNumericUpDown
@@ -1168,10 +1173,10 @@ namespace RacingDSX
             // throttleConfigTabPage
             // 
             throttleConfigTabPage.Controls.Add(throttleTableLayoutPanel);
-            throttleConfigTabPage.Location = new System.Drawing.Point(4, 24);
+            throttleConfigTabPage.Location = new System.Drawing.Point(4, 23);
             throttleConfigTabPage.Name = "throttleConfigTabPage";
             throttleConfigTabPage.Padding = new System.Windows.Forms.Padding(3);
-            throttleConfigTabPage.Size = new System.Drawing.Size(1119, 576);
+            throttleConfigTabPage.Size = new System.Drawing.Size(1119, 577);
             throttleConfigTabPage.TabIndex = 2;
             throttleConfigTabPage.Text = "Throttle Trigger";
             throttleConfigTabPage.UseVisualStyleBackColor = true;
@@ -1249,7 +1254,7 @@ namespace RacingDSX
             throttleTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             throttleTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             throttleTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            throttleTableLayoutPanel.Size = new System.Drawing.Size(1113, 570);
+            throttleTableLayoutPanel.Size = new System.Drawing.Size(1113, 571);
             throttleTableLayoutPanel.TabIndex = 0;
             // 
             // throttleTriggerModeComboBox
@@ -1853,10 +1858,10 @@ namespace RacingDSX
             outputTabPage.Controls.Add(raceGroupBox);
             outputTabPage.Controls.Add(noRaceGroupBox);
             outputTabPage.Controls.Add(outputListBox);
-            outputTabPage.Location = new System.Drawing.Point(4, 24);
+            outputTabPage.Location = new System.Drawing.Point(4, 23);
             outputTabPage.Name = "outputTabPage";
             outputTabPage.Padding = new System.Windows.Forms.Padding(3);
-            outputTabPage.Size = new System.Drawing.Size(1119, 576);
+            outputTabPage.Size = new System.Drawing.Size(1119, 577);
             outputTabPage.TabIndex = 1;
             outputTabPage.Text = "Output";
             outputTabPage.UseVisualStyleBackColor = true;
@@ -1865,7 +1870,7 @@ namespace RacingDSX
             // 
             raceGroupBox.Controls.Add(tableLayoutPanel1);
             raceGroupBox.Dock = System.Windows.Forms.DockStyle.Bottom;
-            raceGroupBox.Location = new System.Drawing.Point(3, 201);
+            raceGroupBox.Location = new System.Drawing.Point(3, 202);
             raceGroupBox.Name = "raceGroupBox";
             raceGroupBox.Size = new System.Drawing.Size(1113, 272);
             raceGroupBox.TabIndex = 3;
@@ -1932,7 +1937,7 @@ namespace RacingDSX
             // 
             noRaceGroupBox.Controls.Add(noRaceText);
             noRaceGroupBox.Dock = System.Windows.Forms.DockStyle.Bottom;
-            noRaceGroupBox.Location = new System.Drawing.Point(3, 473);
+            noRaceGroupBox.Location = new System.Drawing.Point(3, 474);
             noRaceGroupBox.Name = "noRaceGroupBox";
             noRaceGroupBox.Size = new System.Drawing.Size(1113, 100);
             noRaceGroupBox.TabIndex = 2;
@@ -2271,7 +2276,6 @@ namespace RacingDSX
 
         #endregion
         private System.Windows.Forms.Panel mainPanel;
-		private System.Windows.Forms.TabControl mainTabControl;
 		private System.Windows.Forms.TabPage brakeConfigTabPage;
 		private System.Windows.Forms.TabPage outputTabPage;
 		private System.Windows.Forms.ListBox outputListBox;
@@ -2420,5 +2424,6 @@ namespace RacingDSX
         private System.Windows.Forms.ToolStripMenuItem toolStripThemeDark;
         private System.Windows.Forms.ToolStripMenuItem toolStripThemeAuto;
         private System.Windows.Forms.ToolStripMenuItem toolStripThemeAmoled;
+        private CustomTabControl mainTabControl;
     }
 }

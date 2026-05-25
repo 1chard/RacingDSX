@@ -11,6 +11,7 @@ namespace RacingDSX.Graphics
         public Color ForeColor { get; set; }
         public Color BorderColor { get; set; }
         public Color AccentColor { get; set; }
+        public Color AccentTextColor { get; set; }
         public Color ButtonBackColor { get; set; }
         public Color ButtonForeColor { get; set; }
         public Color TextBoxBackColor { get; set; }

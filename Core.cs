@@ -192,7 +192,6 @@ namespace RacingDSX
         public void RestartAppCheckThread()
         {
             StopAppCheckThread();
-            System.Threading.Thread.Sleep(1100);
             startAppCheckThread();
         }
 
