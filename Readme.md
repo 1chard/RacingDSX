@@ -1,11 +1,34 @@
 ![GitHub all releases](https://img.shields.io/github/downloads/1chard/racingDSX/total)
 
+
 Tested and confirmed to work with DSX v2, v3.1, and DSY 
 
-🔺🔺 It is REQUIRED to install .NET8 for racingDSX to work at all!🔺🔺           
-Download .NET8.0 from the link here: https://dotnet.microsoft.com/en-us/download
+Add Dualsense's dynamic trigger support for Forza and Dirt
+## Supported games:  
+- [Forza Horizon 6](https://github.com/1chard/RacingDSX/wiki/Forza-Horizon-6) 
+- [Forza Horizon 5](https://github.com/1chard/RacingDSX/wiki/Forza-Horizon-5) 
+- [Forza Horizon 4](https://github.com/1chard/RacingDSX/wiki/Forza-Horizon-4)
+- Forza Motorsport 7/8
+- Dirt Rally 1/2
 
-# New launch options available
+## How to install (example for Forza Horizon 6 on Steam)
+1. Install latest version of release: https://github.com/1chard/RacingDSX/releases/latest
+2. Run RacingDSX.exe
+3. Allow firewall if necessary
+4. Open DSX or [DualSenseY](https://github.com/WujekFoliarz/DualSenseY-v2) in the background, be sure UDP port is set to `6969`
+5. Launch Forza Horizon 6
+6. In the menu, open Settings > HUD and Gameplay
+7. Set DATA OUT to ON, set DATA OUT IP ADDRESS to 127.0.0.1 and set DATA OUT IP PORT to 5300
+
+## Note for Microsoft Store
+Telemetry data may not be received on Xbox/Microsoft Store games, you need to enable UDP Loopback
+1. Install [Window 8 AppContainer Loopback Utility](https://telerik-fiddler.s3.amazonaws.com/fiddler/addons/enableloopbackutility.exe)
+2. Start the utility (if it shows a message about orphan sid, you can safely ignore it)
+3. Make sure that Forza Horizon 4 / Motorsport 7 are checked
+4. Save changes
+In case the above do not work for you run the below command in Powershell as admin, the command enables udp loopback without needing the utility.
+
+## Launch options
 - `--nogui`, `--headless` Launches the application without the GUI, loads active configuration file
 - `--attach` Try 10 seconds to attach to game, if successful starts to track game's lifespan, when the game is closed, RacingDSX will automatically close as well
 - `--exe-attach` Runs and attaches to game process, when the game is closed, RacingDSX will automatically close
@@ -20,7 +43,7 @@ Use tray's "Open Interface" option to open GUI if you started RacingDSX with `--
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
-# Setting up DiRT Rally 1 / 2 for UDP Connection:
+## Setting up DiRT Rally 1 / 2 for UDP Connection:
 1. Go to `C:\Users\<USER>\Documents\My Games\DiRT Rally X.0\hardwaresettings`;
 2. Open `hardware_settings_config` file with your favorite text editor;
 3. Find for **udp** tag and configure as shown below:
@@ -35,47 +58,18 @@ Use tray's "Open Interface" option to open GUI if you started RacingDSX with `--
    - **extradata = 3**
    - **port = 5300**
 
-🔺🔺 Note for Forza Horizon 4 and Forza Motorsport 7 (THIS IS REQUIRED FOR IT TO WORK) 🔺🔺
-1. Install [Window 8 AppContainer Loopback Utility](https://telerik-fiddler.s3.amazonaws.com/fiddler/addons/enableloopbackutility.exe)
-2. Start the utility (if it shows a message about orphan sid, you can safely ignore it)
-3. Make sure that Forza Horizon 4 / Motorsport 7 are checked
-4. Save changes
-In case the above do not work for you run the below command in Powershell as admin, the command enables udp loopback without needing the utility.
-
-Forza Horizon 4: ```CheckNetIsolation LoopbackExempt -a -n="Microsoft.SunriseBaseGame_8wekyb3d8bbwe"```
-
-Forza Motorsport 7: I do not have FM7 to get the ID, sorry :)
-
 -----------------------------------------------------------------------------------------------------------------------------------------
 
-Step by step instructions for Forza Horizon 5:
-1. Download latest version of RacingDSX from releases https://github.com/cosmii02/RacingDSX/releases
-2. extract the zip file to a folder (For example desktop)
-3. Run RacingDSX exe
-![image](https://user-images.githubusercontent.com/27782168/183417053-33676d94-f137-454b-ad7b-78066f71f6d2.png)
-4. allow firewall prompts if they show up
-5. Open DSX
-6. Run forza horizon 5
-7. Go to settings and enable DATA OUT and set ip to 127.0.0.1 and DATA OUT IP PORT to 5300
-![image](https://user-images.githubusercontent.com/27782168/183418210-145b6701-f1f7-4783-91ba-7a1893294601.png)
-8. In DSX make sure UDP is enabled, go to settings, click controller and then click networking. UDP has to be enabled and must be listening to port 6969
-
-
------------------------------------------------------------------------------------------------------------------------------------------
-Note for Forza Motorsport 7
+## Note for Forza Motorsport 7
 1. Launch the game and head to the HUD options menu
 2. Set Data Out to ON
 3. Set Data Out IP Address to 127.0.0.1 (localhost)
 4. Set Data Out IP Port to 5300
 5. Set Data Out Packet Format to CAR DASH
 
-
-
-
-
-
-
-
+-----------------------------------------------------------------------------------------------------------------------------------------
+🔺🔺 It is REQUIRED to install .NET8 for racingDSX to work at all!🔺🔺           
+Download .NET8.0 from the link here: https://dotnet.microsoft.com/en-us/download
 
 ## Thanks and Credits
 
