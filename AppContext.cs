@@ -35,7 +35,7 @@ namespace RacingDSX
         {
             Application.Idle -= Load;
 
-            core.Initialize(WorkerThreadReporter, AppCheckReporter, Application.Exit);
+            core.Initialize(WorkerThreadReporter, AppCheckReporter);
 
             tray = new NotifyIcon
             {
@@ -116,18 +116,54 @@ namespace RacingDSX
             Application.Exit();
         }
 
-        public void AppCheckReporter(AppCheckReportStruct value)
+        public void AppCheckReporter(AppCheckReportStruct appCheckReportStruct)
         {
+            if (appCheckReportStruct.type == AppCheckReportStruct.AppType.DSX)
+            {
+                core.bDsxConnected = appCheckReportStruct.value;
+            }
+            else if (appCheckReportStruct.type == AppCheckReportStruct.AppType.GAME)
+            {
+                core.bForzaConnected = appCheckReportStruct.value;
+
+                var profileName = appCheckReportStruct.value ? appCheckReportStruct.message : null;
+
+                if (core.SwitchActiveProfile(profileName))
+                {
+                    core.StopRacingDSXThread();
+                    core.StartRacingDSXThread();
+                }
+            }
+
+            if (core.racingDSXTask == null)
+            {
+                if (core.bForzaConnected && core.bDsxConnected)
+                {
+                    core.StartRacingDSXThread();
+                }
+            }
+            else
+            {
+                if (!core.bForzaConnected || !core.bDsxConnected)
+                {
+                    core.StopRacingDSXThread();
+                }
+            }
+
+            if (core.bForzaOpenedOnceAttached && appCheckReportStruct.type == AppCheckReportStruct.AppType.GAME && appCheckReportStruct.value == false)
+            {
+                Application.Exit();
+                return;
+            }
+
             if (ui != null && !ui.IsDisposed)
             {
-                ui.AppCheckReporter(value);
+                ui.AppCheckReporter(appCheckReportStruct);
             }
         }
 
         public void WorkerThreadReporter(RacingDSXReportStruct value)
         {
-            Console.WriteLine("[" + value.type + "] " + value.message);
-
             if(value.type == ReportType.HEARTBEAT)
             {
                 lastUpdate = DateTime.Now;

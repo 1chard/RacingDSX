@@ -10,24 +10,17 @@ namespace RacingDSX
 {
     public class Core
     {
-        public RacingDSXWorker RacingDSXWorker;
+        public RacingDSXWorker racingDSXWorker;
         public AppCheckThread appCheckWorker;
         public RacingDSX.Config.Config currentSettings;
         public RacingDSX.Config.Profile selectedProfile;
         public BindingList<String> executables = new BindingList<string>();
-        public RacingDSX.Config.Config CurrentSettings { get => currentSettings; set => currentSettings = value; }
 
         public bool bForzaConnected = false;
         public bool bDsxConnected = false;
 
-        public Thread appCheckThread;
-        public Thread RacingDSXThread;
-
-        public CancellationTokenSource appCheckThreadCancellationToken;
-        public CancellationToken appCheckThreadToken;
-
-        public CancellationTokenSource forzaThreadCancellationToken;
-        public CancellationToken forzaThreadToken;
+        public Task appCheckTask;
+        public Task racingDSXTask;
 
         public ManualResetEvent eventTimeoutAttach;
         public string targetExecutableName = null;
@@ -37,19 +30,16 @@ namespace RacingDSX
 
         public void Join()
         {
-            if (RacingDSXThread != null)
+            if (racingDSXTask != null)
             {
-                RacingDSXThread.Join();
+                racingDSXTask.Wait();
             }
         }
 
         public void close()
         {
-            appCheckThreadCancellationToken.Cancel();
-            appCheckThreadCancellationToken.Dispose();
-
-            forzaThreadCancellationToken.Cancel();
-            forzaThreadCancellationToken.Dispose();
+            appCheckWorker.Stop();
+            racingDSXWorker.Stop();
         }
 
         public Core(Process process, RacingDSX.Config.Config config, RacingDSX.Config.Profile profile)
@@ -65,65 +55,14 @@ namespace RacingDSX
             }
         }
 
-        public void Initialize(Action<RacingDSXReportStruct> racingDsxHandler, Action<AppCheckReportStruct> appCheckHandler, Action appCloseHandler)
+        public void Initialize(Action<RacingDSXReportStruct> racingDsxHandler, Action<AppCheckReportStruct> appCheckHandler)
         {
             var forzaProgressHandler = new Progress<RacingDSXReportStruct>(racingDsxHandler);
+            racingDSXWorker = new RacingDSXWorker(currentSettings, forzaProgressHandler);
 
-            RacingDSXWorker = new RacingDSXWorker(currentSettings, forzaProgressHandler);
-
-            forzaThreadCancellationToken = new CancellationTokenSource();
-            forzaThreadToken = forzaThreadCancellationToken.Token;
-
-            forzaThreadToken.Register(() => RacingDSXWorker.Stop());
-            var progressHandler = new Progress<AppCheckReportStruct>(appCheckReportStruct =>
-            {
-
-                if (appCheckReportStruct.type == AppCheckReportStruct.AppType.DSX)
-                {
-                    bDsxConnected = appCheckReportStruct.value;
-                }
-                else if (appCheckReportStruct.type == AppCheckReportStruct.AppType.GAME)
-                {
-                    bForzaConnected = appCheckReportStruct.value;
-
-                    var profileName = appCheckReportStruct.value ? appCheckReportStruct.message : null;
-
-                    if (SwitchActiveProfile(profileName))
-                    {
-                        StopRacingDSXThread();
-                        StartRacingDSXThread();
-                    }
-                }
-
-                if (RacingDSXThread == null)
-                {
-                    if (bForzaConnected && bDsxConnected)
-                    {
-                        StartRacingDSXThread();
-                    }
-                }
-                else
-                {
-                    if (!bForzaConnected || !bDsxConnected)
-                    {
-                        StopRacingDSXThread();
-                    }
-                }
-
-                if (bForzaOpenedOnceAttached && appCheckReportStruct.type == AppCheckReportStruct.AppType.GAME && appCheckReportStruct.value == false)
-                {
-                    appCloseHandler();
-                    return;
-                }
-
-                appCheckHandler(appCheckReportStruct);
-            });
-
+            var progressHandler = new Progress<AppCheckReportStruct>(appCheckHandler);
             appCheckWorker = new AppCheckThread(ref currentSettings, progressHandler, this.process);
-            appCheckThreadCancellationToken = new CancellationTokenSource();
-            appCheckThreadToken = appCheckThreadCancellationToken.Token;
 
-            appCheckThreadToken.Register(() => appCheckWorker.Stop());
             if (!currentSettings.DisableAppCheck || targetExecutableName != null)
             {
                 StartAppCheckThread();
@@ -136,7 +75,7 @@ namespace RacingDSX
             }
         }
 
-        public bool SwitchActiveProfile(String profileName)
+        public bool SwitchActiveProfile(string profileName)
         {
             Profile profile = null;
 
@@ -160,25 +99,21 @@ namespace RacingDSX
 
         public void StartRacingDSXThread()
         {
-            if (RacingDSXThread != null
-                || RacingDSXWorker == null)
+            if (racingDSXTask != null
+                || racingDSXWorker == null)
                 return;
             if (currentSettings.ActiveProfile == null)
                 return;
-            RacingDSXThread = new Thread(new ThreadStart(RacingDSXWorker.Run));
-            RacingDSXThread.IsBackground = true;
-
-            RacingDSXThread.Start();
+            racingDSXTask = Task.Factory.StartNew(racingDSXWorker.Run, TaskCreationOptions.LongRunning);
         }
 
         public void StopRacingDSXThread()
         {
             try
             {
-                if (RacingDSXThread != null
-                    && forzaThreadCancellationToken != null)
+                if (racingDSXTask != null)
                 {
-                    forzaThreadCancellationToken.Cancel();
+                    racingDSXWorker.Stop();
                 }
             }
             catch (Exception)
@@ -187,7 +122,7 @@ namespace RacingDSX
                 throw;
             }
 
-            RacingDSXThread = null;
+            racingDSXTask = null;
         }
 
         public void RestartAppCheckThread()
@@ -200,10 +135,9 @@ namespace RacingDSX
         {
             try
             {
-                if (appCheckThread != null
-                    && appCheckThreadCancellationToken != null)
+                if (appCheckTask != null)
                 {
-                    appCheckThreadCancellationToken.Cancel();
+                    appCheckWorker.Stop();
                 }
             }
             catch (Exception)
@@ -211,15 +145,12 @@ namespace RacingDSX
                 throw;
             }
 
-            appCheckThread = null;
+            appCheckTask = null;
         }
 
         protected void StartAppCheckThread()
         {
-            appCheckThread = new Thread(new ThreadStart(appCheckWorker.Run));
-            appCheckThread.IsBackground = true;
-
-            appCheckThread.Start();
+            appCheckTask = Task.Factory.StartNew(appCheckWorker.Run, TaskCreationOptions.LongRunning);
         }
     }
 }

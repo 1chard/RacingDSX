@@ -111,7 +111,7 @@ namespace RacingDSX
 				AppCheckReportStruct dsxReport = new AppCheckReportStruct(AppCheckReportStruct.AppType.DSX);
 				AppCheckReportStruct forzaReport = new AppCheckReportStruct(AppCheckReportStruct.AppType.GAME);
 
-				while (bRunning/*forzaProcesses == 0 || DSX.Length + DSX_2.Length == 0*/)
+				while (bRunning)
 				{
 					System.Threading.Thread.Sleep(1000);
 					lock (this) { 
@@ -169,11 +169,11 @@ namespace RacingDSX
 					progressReporter.Report(new AppCheckReportStruct(0, "Application encountered an exception: " + e.Message));
 				}
 			}
-		}
+        }
 
 		public void Stop()
 		{
-			bRunning = false;
+            bRunning = false;
 		}
 	}
 }

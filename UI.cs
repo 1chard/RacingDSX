@@ -804,11 +804,11 @@ namespace RacingDSX
 
         private void buttonApplyMisc_Click(object sender, EventArgs e)
         {
-            if (core.RacingDSXWorker != null)
+            if (core.racingDSXWorker != null)
             {
                 core.selectedProfile.executableNames = core.executables.ToList();
 
-                core.RacingDSXWorker.SetSettings(core.CurrentSettings);
+                core.racingDSXWorker.SetSettings(core.currentSettings);
                 ConfigHandler.SaveConfig();
                 core.appCheckWorker.updateExecutables();
                 //RestartAppCheckThread();
@@ -817,18 +817,18 @@ namespace RacingDSX
 
         private void buttonApply_Brake_Click(object sender, EventArgs e)
         {
-            if (core.RacingDSXWorker != null)
+            if (core.racingDSXWorker != null)
             {
-                core.RacingDSXWorker.SetSettings(core.CurrentSettings);
+                core.racingDSXWorker.SetSettings(core.currentSettings);
                 ConfigHandler.SaveConfig();
             }
         }
 
         private void buttonApply_Throttle_Click(object sender, EventArgs e)
         {
-            if (core.RacingDSXWorker != null)
+            if (core.racingDSXWorker != null)
             {
-                core.RacingDSXWorker.SetSettings(core.CurrentSettings);
+                core.racingDSXWorker.SetSettings(core.currentSettings);
                 ConfigHandler.SaveConfig();
             }
         }
@@ -858,11 +858,11 @@ namespace RacingDSX
 
             SetupUI();
 
-            if (core.RacingDSXWorker != null)
+            if (core.racingDSXWorker != null)
             {
                 // CurrentSettings.Save();
                 ConfigHandler.SaveConfig();
-                core.RacingDSXWorker.SetSettings(core.CurrentSettings);
+                core.racingDSXWorker.SetSettings(core.currentSettings);
 
                 core.StartRacingDSXThread();
             }
