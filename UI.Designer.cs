@@ -165,9 +165,11 @@ namespace RacingDSX
             verboseModeLowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             verboseModeFullToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             statusStrip1 = new System.Windows.Forms.StatusStrip();
+            toolStripStatusController = new System.Windows.Forms.ToolStripStatusLabel();
             toolStripStatusUDPForza = new System.Windows.Forms.ToolStripStatusLabel();
             toolStripDSXPortButton = new System.Windows.Forms.ToolStripDropDownButton();
             toolStripDSXPortTextBox = new System.Windows.Forms.ToolStripTextBox();
+            toolStripControllerButton = new System.Windows.Forms.ToolStripDropDownButton();
             toolStripAppCheckButton = new System.Windows.Forms.ToolStripDropDownButton();
             toolStripAppCheckOffItem = new System.Windows.Forms.ToolStripMenuItem();
             toolStripAppCheckOnItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -2001,8 +2003,8 @@ namespace RacingDSX
             // 
             toolStripStatusForza.Image = Properties.Resources.redBtn;
             toolStripStatusForza.Name = "toolStripStatusForza";
-            toolStripStatusForza.Size = new System.Drawing.Size(130, 24);
-            toolStripStatusForza.Text = "Game Connection:";
+            toolStripStatusForza.Size = new System.Drawing.Size(124, 24);
+            toolStripStatusForza.Text = "Game Is Running:";
             toolStripStatusForza.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
             // 
             // toolStripVerboseMode
@@ -2041,19 +2043,27 @@ namespace RacingDSX
             // statusStrip1
             // 
             statusStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
-            statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripStatusDSX, toolStripStatusForza, toolStripStatusUDPForza, toolStripVerboseMode, toolStripDSXPortButton, toolStripAppCheckButton, toolStripTheme });
+            statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripStatusDSX, toolStripStatusController, toolStripStatusForza, toolStripStatusUDPForza, toolStripVerboseMode, toolStripDSXPortButton, toolStripControllerButton, toolStripAppCheckButton, toolStripTheme });
             statusStrip1.Location = new System.Drawing.Point(0, 604);
             statusStrip1.Name = "statusStrip1";
             statusStrip1.Size = new System.Drawing.Size(1293, 29);
             statusStrip1.TabIndex = 0;
             statusStrip1.Text = "statusStrip1";
             // 
+            // toolStripStatusController
+            // 
+            toolStripStatusController.Image = Properties.Resources.redBtn;
+            toolStripStatusController.Name = "toolStripStatusController";
+            toolStripStatusController.Size = new System.Drawing.Size(152, 24);
+            toolStripStatusController.Text = "Controller Connection:";
+            toolStripStatusController.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
+            // 
             // toolStripStatusUDPForza
             // 
             toolStripStatusUDPForza.Image = Properties.Resources.redBtn;
             toolStripStatusUDPForza.Name = "toolStripStatusUDPForza";
-            toolStripStatusUDPForza.Size = new System.Drawing.Size(156, 24);
-            toolStripStatusUDPForza.Text = "UDP Game Connection:";
+            toolStripStatusUDPForza.Size = new System.Drawing.Size(130, 24);
+            toolStripStatusUDPForza.Text = "Game Connection:";
             toolStripStatusUDPForza.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
             // 
             // toolStripDSXPortButton
@@ -2072,8 +2082,17 @@ namespace RacingDSX
             toolStripDSXPortTextBox.MaxLength = 5;
             toolStripDSXPortTextBox.Name = "toolStripDSXPortTextBox";
             toolStripDSXPortTextBox.Size = new System.Drawing.Size(100, 23);
-            toolStripDSXPortTextBox.Text = "0";
+            toolStripDSXPortTextBox.ToolTipText = "Default: 6969";
             toolStripDSXPortTextBox.KeyDown += toolStripDSXPortTextBox_KeyDown;
+            // 
+            // toolStripControllerButton
+            // 
+            toolStripControllerButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            toolStripControllerButton.Image = (System.Drawing.Image)resources.GetObject("toolStripControllerButton.Image");
+            toolStripControllerButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            toolStripControllerButton.Name = "toolStripControllerButton";
+            toolStripControllerButton.Size = new System.Drawing.Size(73, 27);
+            toolStripControllerButton.Text = "Controller";
             // 
             // toolStripAppCheckButton
             // 
@@ -2449,5 +2468,7 @@ namespace RacingDSX
         private CustomTabControl mainTabControl;
         private System.Windows.Forms.ComboBox throttleTriggerModeComboBox;
         private System.Windows.Forms.Label throttleTriggerMode;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusController;
+        private System.Windows.Forms.ToolStripDropDownButton toolStripControllerButton;
     }
 }

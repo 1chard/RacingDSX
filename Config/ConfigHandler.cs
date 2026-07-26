@@ -41,7 +41,7 @@ namespace RacingDSX.Config
                 };
                 profile.executableNames.AddRange(new string[] { "forzahorizon6", "ForzaHorizon5", "ForzaHorizon4", "ForzaMotorsport7", "forza_gaming.desktop.x64_release_final", "forza_steamworks_release_final" });
                 config.Profiles.Add("Forza", profile);
-            } 
+            }
             if (!config.Profiles.ContainsKey("Dirt"))
             {
                 Profile profile = new Profile
@@ -51,39 +51,51 @@ namespace RacingDSX.Config
                     GameType = GameTypes.Dirt
                 };
                 profile.throttleSettings.GripLossValue = 0.4f;
-                profile.executableNames.AddRange(new string[] { "drt", "dirtrally2"});
+                profile.executableNames.AddRange(new string[] { "drt", "dirtrally2" });
                 config.Profiles.Add("Dirt", profile);
             }
 
             return config;
         }
 
+        private static (byte major, byte minor, byte patch) ParseVersionString(string versionString)
+        {
+            if (string.IsNullOrEmpty(versionString))
+            {
+                return (0, 0, 0);
+            }
+            var versionParts = versionString.Split('.');
+            if (versionParts.Length != 3)
+            {
+                return (0, 0, 0);
+            }
+            if (!byte.TryParse(versionParts[0], out byte major) ||
+                !byte.TryParse(versionParts[1], out byte minor) ||
+                !byte.TryParse(versionParts[2], out byte patch))
+            {
+                return (0, 0, 0);
+            }
+            return (major, minor, patch);
+        }
+
         private static void UpgradeConfig(Config config)
         {
-            for(int i = 0; i < config.Profiles.Count; i++)
+            var currentVersion = ParseVersionString(config.Version);
+
+            if (currentVersion == (0, 0, 0)) // < 0.8.0
             {
-                var profile = config.Profiles.ElementAt(i).Value;
-
-                switch (profile.Version) { 
-                    case null: // version < 0.7.2
-                        if(profile.Name == "Forza") {
-                            if(!profile.executableNames.Contains("forzahorizon6", StringComparer.OrdinalIgnoreCase)){
-                                profile.executableNames.Add("forzahorizon6");
-                            }
-                        }
+                foreach (var profile in config.Profiles.Values)
+                {
+                    if (profile.Name == "Forza")
+                    {
+                        profile.executableNames.RemoveAll(name => string.Equals(name, "ForzaHorizon6", StringComparison.OrdinalIgnoreCase));
+                        profile.executableNames.Insert(0, "forzahorizon6");
                         break;
-                    case "0.7.2": // set executableName "ForzaHorizon6" from 0.7.2 to lowercase, since game executable is actually lowercase
-                        if (profile.Name == "Forza"){
-                            if (profile.executableNames.Contains("ForzaHorizon6", StringComparer.OrdinalIgnoreCase)){
-                                profile.executableNames.RemoveAll(name => string.Equals(name, "ForzaHorizon6", StringComparison.OrdinalIgnoreCase));
-                                profile.executableNames.Add("forzahorizon6");
-                            }
-                        }
-                        break;
+                    }
                 }
-
-                profile.Version = Program.VERSION;
             }
+
+            config.Version = Program.VERSION;
         }
 
 
@@ -91,8 +103,9 @@ namespace RacingDSX.Config
         {
 
             try
-            {      
-                if (!File.Exists(configFilePath)) {
+            {
+                if (!File.Exists(configFilePath))
+                {
                     return null;
                 }
                 string jsonString = File.ReadAllText(configFilePath);
@@ -112,7 +125,8 @@ namespace RacingDSX.Config
             {
                 string jsonString = JsonSerializer.Serialize(configData);
                 File.WriteAllText(configFilePath, jsonString);
-            } catch (Exception)
+            }
+            catch (Exception)
             {
 
             }
@@ -123,7 +137,7 @@ namespace RacingDSX.Config
             WriteConfigToDisk();
 
         }
-        
+
         public static Config GetConfig()
         {
             if (configData == null)

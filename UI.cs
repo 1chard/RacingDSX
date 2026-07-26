@@ -5,17 +5,19 @@ using RacingDSX.Properties;
 using System;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
+
 
 //using System.Configuration;
 using System.Windows.Forms;
-using static RacingDSX.RacingDSXWorker;
+using static RacingDSX.RacingWorker;
 
 namespace RacingDSX
 {
     public partial class UI : Form
     {
         private Core core;
-        String clickedProfileName = null;
+        string clickedProfileName = null;
         int selectedIndex = 0;
 
         public UI(Core core)
@@ -27,9 +29,15 @@ namespace RacingDSX
             SetTheme(core.currentSettings.Theme);
         }
 
+
         public void SetUDPForzaConnectionStatus(bool val)
         {
             toolStripStatusUDPForza.Image = val ? Resources.greenBtn : Resources.redBtn;
+        }
+
+        void UpdateControllerStatus()
+        {
+            toolStripStatusController.Image = (core.activeController != null) ? Resources.greenBtn : Resources.redBtn;
         }
 
         void UpdateDSXConnectionStatus()
@@ -73,7 +81,7 @@ namespace RacingDSX
             verboseModeOffToolStripMenuItem.Checked = core.currentSettings.VerboseLevel == VerboseLevel.Off;
             verboseModeLowToolStripMenuItem.Checked = core.currentSettings.VerboseLevel == VerboseLevel.Limited;
             verboseModeFullToolStripMenuItem.Checked = core.currentSettings.VerboseLevel == VerboseLevel.Full;
-            toolStripDSXPortButton.Text = "DSX Port: " + core.currentSettings.DSXPort.ToString();
+            toolStripDSXPortButton.Text = "DSX Port: " + (core.currentSettings.DSXPort?.ToString() ?? "none");
             toolStripVerboseMode.Text = "Verbose Mode: " + core.currentSettings.VerboseLevel.ToString();
 
             SetupUI();
@@ -83,6 +91,9 @@ namespace RacingDSX
                 UpdateDSXConnectionStatus();
                 UpdateForzaConnectionStatus();
             }
+
+            // create controller struct
+            DualSenseReporter(new DualSenseReportStruct(DualSenseReportStruct.StatusType.CONNECT, value: true));
         }
 
         private void SetTheme(Theme theme)
@@ -131,14 +142,14 @@ namespace RacingDSX
             }
         }
 
-        public void WorkerThreadReporter(RacingDSXReportStruct value)
+        public void WorkerThreadReporter(RacingReportStruct value)
         {
             switch (value.type)
             {
-                case RacingDSXReportStruct.ReportType.VERBOSEMESSAGE:
+                case RacingReportStruct.ReportType.VERBOSEMESSAGE:
                     Output(value.message);
                     break;
-                case RacingDSXReportStruct.ReportType.NORACE:
+                case RacingReportStruct.ReportType.NORACE:
                     if (core.currentSettings.VerboseLevel > Config.VerboseLevel.Off)
                     {
                         noRaceGroupBox.Visible = true;
@@ -147,7 +158,7 @@ namespace RacingDSX
 
                     noRaceText.Text = value.message;
                     break;
-                case RacingDSXReportStruct.ReportType.RACING:
+                case RacingReportStruct.ReportType.RACING:
                     if (core.currentSettings.VerboseLevel > Config.VerboseLevel.Off)
                     {
                         noRaceGroupBox.Visible = false;
@@ -156,21 +167,95 @@ namespace RacingDSX
 
                     switch (value.racingType)
                     {
-                        case RacingDSXReportStruct.RacingReportType.THROTTLE_VIBRATION:
+                        case RacingReportStruct.RacingReportType.THROTTLE_VIBRATION:
                             throttleVibrationMsg.Text = value.message;
                             break;
-                        case RacingDSXReportStruct.RacingReportType.THROTTLE:
+                        case RacingReportStruct.RacingReportType.THROTTLE:
                             throttleMsg.Text = value.message;
                             break;
-                        case RacingDSXReportStruct.RacingReportType.BRAKE_VIBRATION:
+                        case RacingReportStruct.RacingReportType.BRAKE_VIBRATION:
                             brakeVibrationMsg.Text = value.message;
                             break;
-                        case RacingDSXReportStruct.RacingReportType.BRAKE:
+                        case RacingReportStruct.RacingReportType.BRAKE:
                             brakeMsg.Text = value.message;
                             break;
                     }
                     break;
             }
+        }
+
+        public void DualSenseReporter(DualSenseReportStruct value)
+        {
+            if (value.value == false)
+                return;
+
+            switch (value.status)
+            {
+                case DualSenseReportStruct.StatusType.SELECT:
+                case DualSenseReportStruct.StatusType.UNSELECT:
+                    foreach (ToolStripMenuItem menuItem in toolStripControllerButton.DropDownItems)
+                    {
+                        menuItem.Checked = menuItem.Name == core.activeController?.UniqueId.ToString();
+                    }
+                    break;
+                case DualSenseReportStruct.StatusType.CONNECT:
+                case DualSenseReportStruct.StatusType.DISCONNECT:
+                    {
+                        toolStripControllerButton.DropDownItems.Clear();
+
+                        if (core.dualSenses.Count == 0)
+                        {
+                            var toolStripMenuItemNoElement = new ToolStripMenuItem("noController")
+                            {
+                                Enabled = false,
+                                Text = "No controller available"
+                            };
+                            toolStripControllerButton.DropDownItems.Add(toolStripMenuItemNoElement);
+                        }
+                        else
+                        {
+                            foreach (var dualSenseGroup in core.dualSenses)
+                            {
+                                var dualSense = dualSenseGroup.Value.UsbDs ?? dualSenseGroup.Value.BluetoothDs;
+                                if (dualSense != null)
+                                {
+                                    var toolStripMenuItem = new ToolStripMenuItem
+                                    {
+                                        Text = dualSense.Type == DualSenseSharp.DualSense.ProductType.Edge ? "DualSense Edge" : "DualSense",
+                                        Image = dualSense.IsBluetooth ? Resources.bluetooth : Resources.usb,
+                                        TextImageRelation = TextImageRelation.TextBeforeImage,
+                                        Name = dualSenseGroup.Key,
+                                        Checked = dualSenseGroup.Key == core.activeController?.UniqueId.ToString()
+                                    };
+                                    toolStripMenuItem.Click += async (s, e) =>
+                                    {
+                                        if (toolStripMenuItem.Checked)
+                                        {
+                                            core.NoUseController();
+                                        }
+                                        else if (!dualSense.Disposed)
+                                        {
+                                            dualSense.Rumble.WeakMotor = 120;
+                                            if (await dualSense.UpdateOutputAsync())
+                                            {
+                                                await Task.Delay(250);
+                                                dualSense.Rumble.WeakMotor = 0;
+                                                if (await dualSense.UpdateOutputAsync())
+                                                {
+                                                    core.UseController(dualSense);
+                                                }
+                                            }
+                                        }
+                                    };
+                                    toolStripControllerButton.DropDownItems.Add(toolStripMenuItem);
+                                }
+                            }
+                        }
+                    }
+                    break;
+            }
+
+            UpdateControllerStatus();
         }
 
         protected void SwitchActiveProfile(String profileName)
@@ -235,13 +320,11 @@ namespace RacingDSX
                 toolStripAppCheckButton.Text = "App Check Enabled";
             }
 
-            toolStripDSXPortButton.Text = "DSX Port: " + core.currentSettings.DSXPort.ToString();
+            toolStripDSXPortButton.Text = "DSX Port: " + (core.currentSettings.DSXPort?.ToString() ?? "none");
             toolStripDSXPortTextBox.Text = core.currentSettings.DSXPort.ToString();
-
 
             loadProfilesIntoList();
             SwitchDisplayedProfile();
-
         }
 
         void loadProfilesIntoList()
@@ -804,11 +887,11 @@ namespace RacingDSX
 
         private void buttonApplyMisc_Click(object sender, EventArgs e)
         {
-            if (core.racingDSXWorker != null)
+            if (core.racingWorker != null)
             {
                 core.selectedProfile.executableNames = core.executables.ToList();
 
-                core.racingDSXWorker.SetSettings(core.currentSettings);
+                core.racingWorker.SetSettings(core.currentSettings);
                 ConfigHandler.SaveConfig();
                 core.appCheckWorker.updateExecutables();
                 //RestartAppCheckThread();
@@ -817,18 +900,18 @@ namespace RacingDSX
 
         private void buttonApply_Brake_Click(object sender, EventArgs e)
         {
-            if (core.racingDSXWorker != null)
+            if (core.racingWorker != null)
             {
-                core.racingDSXWorker.SetSettings(core.currentSettings);
+                core.racingWorker.SetSettings(core.currentSettings);
                 ConfigHandler.SaveConfig();
             }
         }
 
         private void buttonApply_Throttle_Click(object sender, EventArgs e)
         {
-            if (core.racingDSXWorker != null)
+            if (core.racingWorker != null)
             {
-                core.racingDSXWorker.SetSettings(core.currentSettings);
+                core.racingWorker.SetSettings(core.currentSettings);
                 ConfigHandler.SaveConfig();
             }
         }
@@ -858,11 +941,11 @@ namespace RacingDSX
 
             SetupUI();
 
-            if (core.racingDSXWorker != null)
+            if (core.racingWorker != null)
             {
                 // CurrentSettings.Save();
                 ConfigHandler.SaveConfig();
-                core.racingDSXWorker.SetSettings(core.currentSettings);
+                core.racingWorker.SetSettings(core.currentSettings);
 
                 core.StartRacingDSXThread();
             }
@@ -904,23 +987,42 @@ namespace RacingDSX
             {
                 toolStripDSXPortTextBox.Text = core.currentSettings.DSXPort.ToString();
             }
-            toolStripDSXPortButton.Text = "DSX Port: " + core.currentSettings.DSXPort.ToString();
+            toolStripDSXPortButton.Text = "DSX Port: " + (core.currentSettings.DSXPort?.ToString() ?? "none");
         }
 
         private void toolStripDSXPortTextBox_KeyDown(object sender, KeyEventArgs e)
         {
+            int? currentPort = core.currentSettings.DSXPort;
             if (e.KeyValue == (char)Keys.Enter)
             {
-                try
+                if (toolStripDSXPortTextBox.Text.Count() == 0)
                 {
-                    core.currentSettings.DSXPort = Int32.Parse(toolStripDSXPortTextBox.Text);
+                    core.currentSettings.DSXPort = null;
                     ConfigHandler.SaveConfig();
                 }
-                catch (Exception)
+                else
                 {
-                    toolStripDSXPortTextBox.Text = core.currentSettings.DSXPort.ToString();
+                    try
+                    {
+                        core.currentSettings.DSXPort = Int32.Parse(toolStripDSXPortTextBox.Text);
+                        ConfigHandler.SaveConfig();
+                    }
+                    catch (Exception)
+                    {
+                        toolStripDSXPortTextBox.Text = core.currentSettings.DSXPort?.ToString() ?? "";
+                    }
                 }
-                toolStripDSXPortButton.Text = "DSX Port: " + core.currentSettings.DSXPort.ToString();
+
+                toolStripDSXPortButton.Text = "DSX Port: " + (core.currentSettings.DSXPort?.ToString() ?? "none");
+            }
+
+            if (currentPort != null && core.currentSettings.DSXPort == null || currentPort == null && core.currentSettings.DSXPort != null)
+            {
+                if (core.racingDSXTask != null)
+                {
+                    core.StopRacingDSXThread();
+                    core.StartRacingDSXThread();
+                }
             }
         }
 

@@ -16,9 +16,6 @@ namespace RacingDSX.Config
         public List<string> executableNames { get; set; } = new List<string>();
         public ThrottleSettings throttleSettings { get; set; } = new ThrottleSettings();
         public BrakeSettings brakeSettings { get; set; } = new BrakeSettings();
-
-        public string Version { get; set; }
-
         public float RPMRedlineRatio { get; set; } = 0.9f;
     }
 }

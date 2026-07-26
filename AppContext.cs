@@ -6,8 +6,8 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static RacingDSX.RacingDSXWorker;
-using static RacingDSX.RacingDSXWorker.RacingDSXReportStruct;
+using static RacingDSX.RacingWorker.RacingReportStruct;
+using static RacingDSX.RacingWorker;
 
 namespace RacingDSX
 {
@@ -35,7 +35,7 @@ namespace RacingDSX
         {
             Application.Idle -= Load;
 
-            core.Initialize(WorkerThreadReporter, AppCheckReporter);
+            core.Initialize(WorkerThreadReporter, AppCheckReporter, DualSenseReporter);
 
             tray = new NotifyIcon
             {
@@ -91,8 +91,8 @@ namespace RacingDSX
                 }
 
                 dsxConnectionMenuItem.Text = $"DSX Connection: {(core.bDsxConnected ? "On" : "Off")}";
-                forzaConnectionMenuItem.Text = $"Game Connection: {(core.bForzaConnected ? "On" : "Off")}";
-                udpForzaConnectionMenuItem.Text = $"UDP Game Connection: {(bConnectionUdp ? "On" : "Off")}";
+                forzaConnectionMenuItem.Text = $"Game Is Running: {(core.bForzaConnected ? "On" : "Off")}";
+                udpForzaConnectionMenuItem.Text = $"Game Connection: {(bConnectionUdp ? "On" : "Off")}";
                 appCheckMenuItem.Text = $"App Check: {(core.currentSettings.DisableAppCheck && core.targetExecutableName == null ? "Off" : "On")}";
 
                 await Task.Delay(1000);
@@ -144,7 +144,7 @@ namespace RacingDSX
             }
             else
             {
-                if (!core.bForzaConnected || !core.bDsxConnected)
+                if (!core.bForzaConnected)
                 {
                     core.StopRacingDSXThread();
                 }
@@ -162,9 +162,9 @@ namespace RacingDSX
             }
         }
 
-        public void WorkerThreadReporter(RacingDSXReportStruct value)
+        public void WorkerThreadReporter(RacingReportStruct value)
         {
-            if(value.type == ReportType.HEARTBEAT)
+            if (value.type == ReportType.HEARTBEAT)
             {
                 lastUpdate = DateTime.Now;
                 return;
@@ -173,6 +173,14 @@ namespace RacingDSX
             if (ui != null && !ui.IsDisposed)
             {
                 ui.WorkerThreadReporter(value);
+            }
+        }
+
+        public void DualSenseReporter(DualSenseReportStruct value)
+        {
+            if (ui != null && !ui.IsDisposed)
+            {
+                ui.DualSenseReporter(value);
             }
         }
     }

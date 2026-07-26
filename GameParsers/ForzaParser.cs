@@ -5,7 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static RacingDSX.RacingDSXWorker;
+using static RacingDSX.DsxSender;
+using static RacingDSX.RacingWorker;
 
 namespace RacingDSX.GameParsers
 {
@@ -126,7 +127,7 @@ namespace RacingDSX.GameParsers
             #endregion
 
 
-                reportableInstruction.RacingDSXReportStructs.Add(new RacingDSXReportStruct(VerboseLevel.Limited, RacingDSXReportStruct.ReportType.NORACE, $"No race going on. Normal Triggers. Car's Class = {currentClass}; CPI = {currentCPI}; CPI Ratio = {cpiRatio}; Color [{CPIcolorR}, {CPIcolorG}, {CPIcolorB}]"));
+                reportableInstruction.RacingReportStructs.Add(new RacingReportStruct(VerboseLevel.Limited, RacingReportStruct.ReportType.NORACE, $"No race going on. Normal Triggers. Car's Class = {currentClass}; CPI = {currentCPI}; CPI Ratio = {cpiRatio}; Color [{CPIcolorR}, {CPIcolorG}, {CPIcolorB}]"));
             
 
             reportableInstruction.Instructions = new Instruction[] { LightBar, LeftTrigger, RightTrigger };
