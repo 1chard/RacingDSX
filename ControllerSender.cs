@@ -2,6 +2,7 @@
 using DualSenseSharp.Components;
 using DualSenseSharp.Components.Triggers.DSX;
 using RacingDSX.Config;
+using RacingDSX.DSX;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -59,15 +60,15 @@ namespace RacingDSX
                                 {
                                     var triggerType = (Trigger)instruction.Parameters[1];
                                     var trigger = triggerType == Trigger.Right ? dualSense.RightTrigger : dualSense.LeftTrigger;
-                                    var effectType = (TriggerMode)instruction.Parameters[2];
+                                    var effectType = (DSX.TriggerMode)instruction.Parameters[2];
 
                                     AdaptiveTrigger.TriggerMode mode;
                                     switch (effectType)
                                     {
-                                        case TriggerMode.Normal:
+                                        case DSX.TriggerMode.Normal:
                                             mode = new Normal();
                                             break;
-                                        case TriggerMode.Resistance:
+                                        case DSX.TriggerMode.Resistance:
                                             var start = Normalize(instruction.Parameters[3]);
                                             var force = Normalize(instruction.Parameters[4]);
                                             if (force > 8 || start > 9)
@@ -75,7 +76,7 @@ namespace RacingDSX
                                             else
                                                 mode = new Resistance(force, start);
                                             break;
-                                        case TriggerMode.CustomTriggerValue:
+                                        case DSX.TriggerMode.CustomTriggerValue:
                                             mode = new CustomTriggerValue((CustomTriggerValue.CustomTriggerValueMode)Normalize(instruction.Parameters[3]),
                                                 [.. instruction.Parameters[4..].Select(Normalize)]);
                                             break;

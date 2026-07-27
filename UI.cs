@@ -26,7 +26,7 @@ namespace RacingDSX
 
             InitializeComponent();
 
-            SetTheme(core.currentSettings.Theme);
+            SetTheme(core.CurrentSettings.Theme);
         }
 
 
@@ -37,7 +37,7 @@ namespace RacingDSX
 
         void UpdateControllerStatus()
         {
-            toolStripStatusController.Image = (core.activeController != null) ? Resources.greenBtn : Resources.redBtn;
+            toolStripStatusController.Image = core.bControllerConnected ? Resources.greenBtn : Resources.redBtn;
         }
 
         void UpdateDSXConnectionStatus()
@@ -67,26 +67,26 @@ namespace RacingDSX
 
         private void UI_Load(object sender, EventArgs e)
         {
-            this.Text = "RacingDSX version: " + Program.VERSION + (core.targetExecutableName != null ? $" [{core.targetExecutableName}] " : "");
+            Text = "RacingDSX version: " + Program.VERSION + (core.targetExecutableName != null ? $" [{core.targetExecutableName}] " : "");
 
-            noRaceText.Text = String.Empty;
-            throttleVibrationMsg.Text = String.Empty;
-            throttleMsg.Text = String.Empty;
-            brakeVibrationMsg.Text = String.Empty;
-            brakeMsg.Text = String.Empty;
+            noRaceText.Text = string.Empty;
+            throttleVibrationMsg.Text = string.Empty;
+            throttleMsg.Text = string.Empty;
+            brakeVibrationMsg.Text = string.Empty;
+            brakeMsg.Text = string.Empty;
 
-            noRaceGroupBox.Visible = core.currentSettings.VerboseLevel > Config.VerboseLevel.Off;
-            raceGroupBox.Visible = core.currentSettings.VerboseLevel > Config.VerboseLevel.Off;
+            noRaceGroupBox.Visible = core.CurrentSettings.VerboseLevel > Config.VerboseLevel.Off;
+            raceGroupBox.Visible = core.CurrentSettings.VerboseLevel > Config.VerboseLevel.Off;
 
-            verboseModeOffToolStripMenuItem.Checked = core.currentSettings.VerboseLevel == VerboseLevel.Off;
-            verboseModeLowToolStripMenuItem.Checked = core.currentSettings.VerboseLevel == VerboseLevel.Limited;
-            verboseModeFullToolStripMenuItem.Checked = core.currentSettings.VerboseLevel == VerboseLevel.Full;
-            toolStripDSXPortButton.Text = "DSX Port: " + (core.currentSettings.DSXPort?.ToString() ?? "none");
-            toolStripVerboseMode.Text = "Verbose Mode: " + core.currentSettings.VerboseLevel.ToString();
+            verboseModeOffToolStripMenuItem.Checked = core.CurrentSettings.VerboseLevel == VerboseLevel.Off;
+            verboseModeLowToolStripMenuItem.Checked = core.CurrentSettings.VerboseLevel == VerboseLevel.Limited;
+            verboseModeFullToolStripMenuItem.Checked = core.CurrentSettings.VerboseLevel == VerboseLevel.Full;
+            toolStripDSXPortButton.Text = "DSX Port: " + (core.CurrentSettings.DSXPort?.ToString() ?? "none");
+            toolStripVerboseMode.Text = "Verbose Mode: " + core.CurrentSettings.VerboseLevel.ToString();
 
             SetupUI();
 
-            if (core.currentSettings.DisableAppCheck && core.targetExecutableName == null)
+            if (core.CurrentSettings.DisableAppCheck && core.targetExecutableName == null)
             {
                 UpdateDSXConnectionStatus();
                 UpdateForzaConnectionStatus();
@@ -114,7 +114,7 @@ namespace RacingDSX
             toolStripThemeAmoled.Checked = theme == Theme.Amoled;
 
             ThemeManager.ApplyTheme(this);
-            core.currentSettings.Theme = theme;
+            core.CurrentSettings.Theme = theme;
             ConfigHandler.SaveConfig();
         }
 
@@ -150,7 +150,7 @@ namespace RacingDSX
                     Output(value.message);
                     break;
                 case RacingReportStruct.ReportType.NORACE:
-                    if (core.currentSettings.VerboseLevel > Config.VerboseLevel.Off)
+                    if (core.CurrentSettings.VerboseLevel > Config.VerboseLevel.Off)
                     {
                         noRaceGroupBox.Visible = true;
                         raceGroupBox.Visible = false;
@@ -159,7 +159,7 @@ namespace RacingDSX
                     noRaceText.Text = value.message;
                     break;
                 case RacingReportStruct.ReportType.RACING:
-                    if (core.currentSettings.VerboseLevel > Config.VerboseLevel.Off)
+                    if (core.CurrentSettings.VerboseLevel > Config.VerboseLevel.Off)
                     {
                         noRaceGroupBox.Visible = false;
                         raceGroupBox.Visible = true;
@@ -258,26 +258,25 @@ namespace RacingDSX
             UpdateControllerStatus();
         }
 
-        protected void SwitchActiveProfile(String profileName)
+        protected void SwitchActiveProfile(string profileName)
         {
-            if (core.currentSettings.ActiveProfile == null || core.currentSettings.ActiveProfile.Name == profileName)
+            if (core.CurrentSettings.ActiveProfile == null || core.CurrentSettings.ActiveProfile.Name == profileName)
                 return;
 
             loadProfilesIntoList();
             SwitchDisplayedProfile(profileName);
         }
 
-        private void disableAppCheck()
+        private void DisableAppCheck()
         {
-            core.currentSettings.DisableAppCheck = true;
+            core.CurrentSettings.DisableAppCheck = true;
             toolStripAppCheckOnItem.Checked = false;
             toolStripAppCheckOffItem.Checked = true;
             toolStripAppCheckButton.Text = "App Check Disabled";
             core.StopAppCheckThread();
-            SwitchActiveProfile(core.currentSettings.DefaultProfile);
-            core.bDsxConnected = true;
+            SwitchActiveProfile(core.CurrentSettings.DefaultProfile);
             core.bForzaConnected = true;
-            UpdateDSXConnectionStatus();
+            core.bDsxConnected = core.CurrentSettings.DSXPort != null;
             UpdateForzaConnectionStatus();
             core.StartRacingDSXThread();
             ConfigHandler.SaveConfig();
@@ -307,7 +306,7 @@ namespace RacingDSX
                 toolStripAppCheckButton.Enabled = false;
             }
 
-            if (core.currentSettings.DisableAppCheck && core.targetExecutableName == null)
+            if (core.CurrentSettings.DisableAppCheck && core.targetExecutableName == null)
             {
                 toolStripAppCheckOnItem.Checked = false;
                 toolStripAppCheckOffItem.Checked = true;
@@ -320,8 +319,8 @@ namespace RacingDSX
                 toolStripAppCheckButton.Text = "App Check Enabled";
             }
 
-            toolStripDSXPortButton.Text = "DSX Port: " + (core.currentSettings.DSXPort?.ToString() ?? "none");
-            toolStripDSXPortTextBox.Text = core.currentSettings.DSXPort.ToString();
+            toolStripDSXPortButton.Text = "DSX Port: " + (core.CurrentSettings.DSXPort?.ToString() ?? "none");
+            toolStripDSXPortTextBox.Text = core.CurrentSettings.DSXPort.ToString();
 
             loadProfilesIntoList();
             SwitchDisplayedProfile();
@@ -331,7 +330,7 @@ namespace RacingDSX
         {
             profilesListView.Items.Clear();
             //Load Profiles into list
-            foreach (Profile profile in core.currentSettings.Profiles.Values)
+            foreach (Profile profile in core.CurrentSettings.Profiles.Values)
             {
                 String name = profile.Name;
                 ListViewItem item = new ListViewItem(name);
@@ -340,12 +339,12 @@ namespace RacingDSX
                 {
                     name += " (Disabled)";
                 }
-                if (profile == core.currentSettings.ActiveProfile)
+                if (profile == core.CurrentSettings.ActiveProfile)
                 {
                     name += " (Active)";
                     item.Selected = true;
                 }
-                if (profile.Name == core.currentSettings.DefaultProfile)
+                if (profile.Name == core.CurrentSettings.DefaultProfile)
                 {
                     name += " (Default)";
                 }
@@ -361,13 +360,13 @@ namespace RacingDSX
             {
                 if (core.selectedProfile == null)
                 {
-                    core.selectedProfile = core.currentSettings.Profiles.Values.First();
+                    core.selectedProfile = core.CurrentSettings.Profiles.Values.First();
                 }
                 profileName = core.selectedProfile.Name;
             }
-            if (core.currentSettings.Profiles.ContainsKey(profileName))
+            if (core.CurrentSettings.Profiles.ContainsKey(profileName))
             {
-                core.selectedProfile = core.currentSettings.Profiles[profileName];
+                core.selectedProfile = core.CurrentSettings.Profiles[profileName];
             }
             core.executables = new BindingList<string>(core.selectedProfile.executableNames);
             ExecutableListBox.DataSource = core.executables;
@@ -459,32 +458,32 @@ namespace RacingDSX
 
         private void verboseModeFullToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            core.currentSettings.VerboseLevel = VerboseLevel.Full;
+            core.CurrentSettings.VerboseLevel = VerboseLevel.Full;
             verboseModeOffToolStripMenuItem.Checked = false;
             verboseModeLowToolStripMenuItem.Checked = false;
             verboseModeFullToolStripMenuItem.Checked = true;
-            toolStripVerboseMode.Text = "Verbose Mode: " + core.currentSettings.VerboseLevel.ToString();
+            toolStripVerboseMode.Text = "Verbose Mode: " + core.CurrentSettings.VerboseLevel.ToString();
             ConfigHandler.SaveConfig();
 
         }
 
         private void verboseModeLowToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            core.currentSettings.VerboseLevel = VerboseLevel.Limited;
+            core.CurrentSettings.VerboseLevel = VerboseLevel.Limited;
             verboseModeOffToolStripMenuItem.Checked = false;
             verboseModeLowToolStripMenuItem.Checked = true;
             verboseModeFullToolStripMenuItem.Checked = false;
-            toolStripVerboseMode.Text = "Verbose Mode: " + core.currentSettings.VerboseLevel.ToString();
+            toolStripVerboseMode.Text = "Verbose Mode: " + core.CurrentSettings.VerboseLevel.ToString();
             ConfigHandler.SaveConfig();
         }
 
         private void verboseModeOffToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            core.currentSettings.VerboseLevel = VerboseLevel.Off;
+            core.CurrentSettings.VerboseLevel = VerboseLevel.Off;
             verboseModeOffToolStripMenuItem.Checked = true;
             verboseModeLowToolStripMenuItem.Checked = false;
             verboseModeFullToolStripMenuItem.Checked = false;
-            toolStripVerboseMode.Text = "Verbose Mode: " + core.currentSettings.VerboseLevel.ToString();
+            toolStripVerboseMode.Text = "Verbose Mode: " + core.CurrentSettings.VerboseLevel.ToString();
 
             noRaceGroupBox.Visible = false;
             raceGroupBox.Visible = false;
@@ -891,7 +890,7 @@ namespace RacingDSX
             {
                 core.selectedProfile.executableNames = core.executables.ToList();
 
-                core.racingWorker.SetSettings(core.currentSettings);
+                core.racingWorker.SetSettings(core.CurrentSettings);
                 ConfigHandler.SaveConfig();
                 core.appCheckWorker.updateExecutables();
                 //RestartAppCheckThread();
@@ -902,7 +901,7 @@ namespace RacingDSX
         {
             if (core.racingWorker != null)
             {
-                core.racingWorker.SetSettings(core.currentSettings);
+                core.racingWorker.SetSettings(core.CurrentSettings);
                 ConfigHandler.SaveConfig();
             }
         }
@@ -911,7 +910,7 @@ namespace RacingDSX
         {
             if (core.racingWorker != null)
             {
-                core.racingWorker.SetSettings(core.currentSettings);
+                core.racingWorker.SetSettings(core.CurrentSettings);
                 ConfigHandler.SaveConfig();
             }
         }
@@ -945,7 +944,7 @@ namespace RacingDSX
             {
                 // CurrentSettings.Save();
                 ConfigHandler.SaveConfig();
-                core.racingWorker.SetSettings(core.currentSettings);
+                core.racingWorker.SetSettings(core.CurrentSettings);
 
                 core.StartRacingDSXThread();
             }
@@ -963,7 +962,7 @@ namespace RacingDSX
 
         private void toolStripAppCheckOnItem_Click(object sender, EventArgs e)
         {
-            core.currentSettings.DisableAppCheck = false;
+            core.CurrentSettings.DisableAppCheck = false;
             toolStripAppCheckOnItem.Checked = true;
             toolStripAppCheckOffItem.Checked = false;
             toolStripAppCheckButton.Text = "App Check Enabled";
@@ -972,56 +971,55 @@ namespace RacingDSX
         }
         private void toolStripAppCheckOffItem_Click(object sender, EventArgs e)
         {
-            disableAppCheck();
+            DisableAppCheck();
         }
 
         private void toolStripDSXPortButton_Click(object sender, EventArgs e)
         {
             try
             {
-                core.currentSettings.DSXPort = Int32.Parse(toolStripDSXPortTextBox.Text);
+                core.CurrentSettings.DSXPort = int.Parse(toolStripDSXPortTextBox.Text);
                 ConfigHandler.SaveConfig();
 
             }
             catch (Exception)
             {
-                toolStripDSXPortTextBox.Text = core.currentSettings.DSXPort.ToString();
+                toolStripDSXPortTextBox.Text = core.CurrentSettings.DSXPort.ToString();
             }
-            toolStripDSXPortButton.Text = "DSX Port: " + (core.currentSettings.DSXPort?.ToString() ?? "none");
+            toolStripDSXPortButton.Text = "DSX Port: " + (core.CurrentSettings.DSXPort?.ToString() ?? "none");
         }
 
         private void toolStripDSXPortTextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            int? currentPort = core.currentSettings.DSXPort;
+            int? currentPort = core.CurrentSettings.DSXPort;
             if (e.KeyValue == (char)Keys.Enter)
             {
                 if (toolStripDSXPortTextBox.Text.Count() == 0)
                 {
-                    core.currentSettings.DSXPort = null;
+                    core.CurrentSettings.DSXPort = null;
                     ConfigHandler.SaveConfig();
                 }
                 else
                 {
                     try
                     {
-                        core.currentSettings.DSXPort = Int32.Parse(toolStripDSXPortTextBox.Text);
+                        core.CurrentSettings.DSXPort = int.Parse(toolStripDSXPortTextBox.Text);
                         ConfigHandler.SaveConfig();
                     }
                     catch (Exception)
                     {
-                        toolStripDSXPortTextBox.Text = core.currentSettings.DSXPort?.ToString() ?? "";
+                        toolStripDSXPortTextBox.Text = core.CurrentSettings.DSXPort?.ToString() ?? "";
                     }
                 }
 
-                toolStripDSXPortButton.Text = "DSX Port: " + (core.currentSettings.DSXPort?.ToString() ?? "none");
+                toolStripDSXPortButton.Text = "DSX Port: " + (core.CurrentSettings.DSXPort?.ToString() ?? "none");
             }
 
-            if (currentPort != null && core.currentSettings.DSXPort == null || currentPort == null && core.currentSettings.DSXPort != null)
+            if (currentPort != null && core.CurrentSettings.DSXPort == null || currentPort == null && core.CurrentSettings.DSXPort != null)
             {
-                if (core.racingDSXTask != null)
+                if (core.bForzaConnected)
                 {
-                    core.StopRacingDSXThread();
-                    core.StartRacingDSXThread();
+                    core.RestartRacingDSXThread();
                 }
             }
         }
@@ -1055,7 +1053,7 @@ namespace RacingDSX
                     setActiveToolStripMenuItem.Enabled = true;
 
 
-                    if (core.currentSettings.Profiles[HI.Item.Name].IsEnabled)
+                    if (core.CurrentSettings.Profiles[HI.Item.Name].IsEnabled)
                     {
                         disableToolStripMenuItem.Text = "Disable";
                     }
@@ -1063,7 +1061,7 @@ namespace RacingDSX
                     {
                         disableToolStripMenuItem.Text = "Enable";
                     }
-                    if (core.currentSettings.Profiles[HI.Item.Name] == core.currentSettings.ActiveProfile)
+                    if (core.CurrentSettings.Profiles[HI.Item.Name] == core.CurrentSettings.ActiveProfile)
                     {
                         setActiveToolStripMenuItem.CheckState = CheckState.Checked;
                     }
@@ -1071,7 +1069,7 @@ namespace RacingDSX
                     {
                         setActiveToolStripMenuItem.CheckState = CheckState.Unchecked;
                     }
-                    if (HI.Item.Name == core.currentSettings.DefaultProfile)
+                    if (HI.Item.Name == core.CurrentSettings.DefaultProfile)
                     {
                         defaultToolStripMenuItem.CheckState = CheckState.Checked;
                     }
@@ -1111,7 +1109,7 @@ namespace RacingDSX
             String newProfileName = NameForm.ShowDialog("", "Please enter the Profile Name");
             if (newProfileName != "")
             {
-                if (core.currentSettings.Profiles.ContainsKey(newProfileName))
+                if (core.CurrentSettings.Profiles.ContainsKey(newProfileName))
                 {
                     string message = "You cannot have a duplicate Profile Name!";
                     MessageBox.Show(message);
@@ -1120,7 +1118,7 @@ namespace RacingDSX
                 }
                 Profile newProfile = new Profile();
                 newProfile.Name = newProfileName;
-                core.currentSettings.Profiles.Add(newProfileName, newProfile);
+                core.CurrentSettings.Profiles.Add(newProfileName, newProfile);
                 ConfigHandler.SaveConfig();
                 loadProfilesIntoList();
             }
@@ -1132,17 +1130,17 @@ namespace RacingDSX
             String newProfileName = NameForm.ShowDialog(oldProfileName, "Please enter the Profile Name");
             if (newProfileName != "" && oldProfileName != newProfileName)
             {
-                if (core.currentSettings.Profiles.ContainsKey(newProfileName))
+                if (core.CurrentSettings.Profiles.ContainsKey(newProfileName))
                 {
                     string message = "You cannot have a duplicate Profile Name!";
                     MessageBox.Show(message);
                     return;
 
                 }
-                Profile newProfile = core.currentSettings.Profiles[oldProfileName];
-                core.currentSettings.Profiles.Remove(oldProfileName);
+                Profile newProfile = core.CurrentSettings.Profiles[oldProfileName];
+                core.CurrentSettings.Profiles.Remove(oldProfileName);
                 newProfile.Name = newProfileName;
-                core.currentSettings.Profiles.Add(newProfileName, newProfile);
+                core.CurrentSettings.Profiles.Add(newProfileName, newProfile);
                 ConfigHandler.SaveConfig();
                 loadProfilesIntoList();
             }
@@ -1151,9 +1149,9 @@ namespace RacingDSX
         private void disableToolStripMenuItem_Click(object sender, EventArgs e)
         {
             String profileName = clickedProfileName;
-            if (core.currentSettings.Profiles.ContainsKey(profileName))
+            if (core.CurrentSettings.Profiles.ContainsKey(profileName))
             {
-                Profile profile = core.currentSettings.Profiles[profileName];
+                Profile profile = core.CurrentSettings.Profiles[profileName];
                 profile.IsEnabled = !profile.IsEnabled;
                 //profile.IsEnabled = false;
                 ConfigHandler.SaveConfig();
@@ -1166,9 +1164,9 @@ namespace RacingDSX
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             String profileName = clickedProfileName;
-            if (core.currentSettings.Profiles.ContainsKey(profileName))
+            if (core.CurrentSettings.Profiles.ContainsKey(profileName))
             {
-                core.currentSettings.Profiles.Remove(profileName);
+                core.CurrentSettings.Profiles.Remove(profileName);
                 ConfigHandler.SaveConfig();
                 loadProfilesIntoList();
             }
@@ -1182,9 +1180,9 @@ namespace RacingDSX
         private void defaultToolStripMenuItem_Click(object sender, EventArgs e)
         {
             String profileName = clickedProfileName;
-            if (core.currentSettings.Profiles.ContainsKey(profileName))
+            if (core.CurrentSettings.Profiles.ContainsKey(profileName))
             {
-                core.currentSettings.DefaultProfile = profileName;
+                core.CurrentSettings.DefaultProfile = profileName;
                 ConfigHandler.SaveConfig();
                 loadProfilesIntoList();
             }
@@ -1193,10 +1191,10 @@ namespace RacingDSX
         private void setActiveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             String profileName = clickedProfileName;
-            if (core.currentSettings.Profiles.ContainsKey(profileName))
+            if (core.CurrentSettings.Profiles.ContainsKey(profileName))
             {
                 //currentSettings.ActiveProfile = currentSettings.Profiles[profileName];
-                disableAppCheck();
+                DisableAppCheck();
                 SwitchActiveProfile(profileName);
             }
         }
@@ -1206,7 +1204,7 @@ namespace RacingDSX
             String newExecutableName = NameForm.ShowDialog("", "Please enter the Executable Name"); ;
             if (newExecutableName != "")
             {
-                var prof = core.currentSettings.Profiles.Values.Where(x => x.executableNames.Contains(newExecutableName, StringComparer.OrdinalIgnoreCase));
+                var prof = core.CurrentSettings.Profiles.Values.Where(x => x.executableNames.Contains(newExecutableName, StringComparer.OrdinalIgnoreCase));
                 if (prof.Count() > 0)
                 {
                     string message = "You cannot have a duplicate Executable Name! Executable already part of Profile " + prof.First().Name;
@@ -1226,7 +1224,7 @@ namespace RacingDSX
             String newExecutableName = NameForm.ShowDialog(oldExecutableName, "Please enter the Executable Name"); ;
             if (newExecutableName != "")
             {
-                var prof = core.currentSettings.Profiles.Values.Where(x => x.executableNames.Contains(newExecutableName, StringComparer.OrdinalIgnoreCase));
+                var prof = core.CurrentSettings.Profiles.Values.Where(x => x.executableNames.Contains(newExecutableName, StringComparer.OrdinalIgnoreCase));
                 if (prof.Count() > 0)
                 {
                     string message = "You cannot have a duplicate Executable Name! Executable already part of Profile " + prof.First().Name;

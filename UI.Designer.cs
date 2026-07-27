@@ -271,7 +271,7 @@ namespace RacingDSX
             mainPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             mainPanel.Location = new System.Drawing.Point(0, 0);
             mainPanel.Name = "mainPanel";
-            mainPanel.Size = new System.Drawing.Size(1293, 604);
+            mainPanel.Size = new System.Drawing.Size(1293, 611);
             mainPanel.TabIndex = 0;
             // 
             // mainSplitContainer
@@ -288,7 +288,7 @@ namespace RacingDSX
             // mainSplitContainer.Panel2
             // 
             mainSplitContainer.Panel2.Controls.Add(mainTabControl);
-            mainSplitContainer.Size = new System.Drawing.Size(1293, 604);
+            mainSplitContainer.Size = new System.Drawing.Size(1293, 611);
             mainSplitContainer.SplitterDistance = 163;
             mainSplitContainer.SplitterWidth = 3;
             mainSplitContainer.TabIndex = 1;
@@ -301,7 +301,7 @@ namespace RacingDSX
             profilesGroupBox.Margin = new System.Windows.Forms.Padding(2);
             profilesGroupBox.Name = "profilesGroupBox";
             profilesGroupBox.Padding = new System.Windows.Forms.Padding(2);
-            profilesGroupBox.Size = new System.Drawing.Size(163, 604);
+            profilesGroupBox.Size = new System.Drawing.Size(163, 611);
             profilesGroupBox.TabIndex = 3;
             profilesGroupBox.TabStop = false;
             profilesGroupBox.Text = "Profiles";
@@ -315,7 +315,7 @@ namespace RacingDSX
             profilesListView.Margin = new System.Windows.Forms.Padding(2);
             profilesListView.MultiSelect = false;
             profilesListView.Name = "profilesListView";
-            profilesListView.Size = new System.Drawing.Size(159, 584);
+            profilesListView.Size = new System.Drawing.Size(159, 591);
             profilesListView.TabIndex = 0;
             profilesListView.UseCompatibleStateImageBehavior = false;
             profilesListView.View = System.Windows.Forms.View.List;
@@ -335,7 +335,7 @@ namespace RacingDSX
             mainTabControl.SelectedIndex = 0;
             mainTabControl.SelectedTabColor = System.Drawing.SystemColors.Highlight;
             mainTabControl.SelectedTextColor = System.Drawing.SystemColors.HighlightText;
-            mainTabControl.Size = new System.Drawing.Size(1127, 604);
+            mainTabControl.Size = new System.Drawing.Size(1127, 611);
             mainTabControl.TabBackColor = System.Drawing.SystemColors.ControlLight;
             mainTabControl.TabIndex = 0;
             mainTabControl.TabTextColor = System.Drawing.SystemColors.ControlText;
@@ -346,7 +346,7 @@ namespace RacingDSX
             miscTabPage.Location = new System.Drawing.Point(4, 23);
             miscTabPage.Name = "miscTabPage";
             miscTabPage.Padding = new System.Windows.Forms.Padding(3);
-            miscTabPage.Size = new System.Drawing.Size(1119, 577);
+            miscTabPage.Size = new System.Drawing.Size(1119, 584);
             miscTabPage.TabIndex = 3;
             miscTabPage.Text = "Misc";
             miscTabPage.UseVisualStyleBackColor = true;
@@ -383,7 +383,7 @@ namespace RacingDSX
             miscTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             miscTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             miscTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            miscTableLayoutPanel.Size = new System.Drawing.Size(1113, 571);
+            miscTableLayoutPanel.Size = new System.Drawing.Size(1113, 578);
             miscTableLayoutPanel.TabIndex = 0;
             // 
             // forzaPortNumericUpDown
@@ -575,7 +575,7 @@ namespace RacingDSX
             brakeConfigTabPage.Location = new System.Drawing.Point(4, 23);
             brakeConfigTabPage.Name = "brakeConfigTabPage";
             brakeConfigTabPage.Padding = new System.Windows.Forms.Padding(3);
-            brakeConfigTabPage.Size = new System.Drawing.Size(1119, 577);
+            brakeConfigTabPage.Size = new System.Drawing.Size(1119, 584);
             brakeConfigTabPage.TabIndex = 4;
             brakeConfigTabPage.Text = "Brake Trigger";
             // 
@@ -644,7 +644,7 @@ namespace RacingDSX
             brakeTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             brakeTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             brakeTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            brakeTableLayoutPanel.Size = new System.Drawing.Size(1113, 571);
+            brakeTableLayoutPanel.Size = new System.Drawing.Size(1113, 578);
             brakeTableLayoutPanel.TabIndex = 0;
             // 
             // brakeResistanceSmoothNumericUpDown
@@ -1188,7 +1188,7 @@ namespace RacingDSX
             throttleConfigTabPage.Location = new System.Drawing.Point(4, 23);
             throttleConfigTabPage.Name = "throttleConfigTabPage";
             throttleConfigTabPage.Padding = new System.Windows.Forms.Padding(3);
-            throttleConfigTabPage.Size = new System.Drawing.Size(1119, 577);
+            throttleConfigTabPage.Size = new System.Drawing.Size(1119, 584);
             throttleConfigTabPage.TabIndex = 2;
             throttleConfigTabPage.Text = "Throttle Trigger";
             throttleConfigTabPage.UseVisualStyleBackColor = true;
@@ -1266,7 +1266,7 @@ namespace RacingDSX
             throttleTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             throttleTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             throttleTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            throttleTableLayoutPanel.Size = new System.Drawing.Size(1113, 571);
+            throttleTableLayoutPanel.Size = new System.Drawing.Size(1113, 578);
             throttleTableLayoutPanel.TabIndex = 0;
             // 
             // throttleTriggerModeComboBox
@@ -1294,7 +1294,6 @@ namespace RacingDSX
             // throttleResistanceSmoothNumericUpDown
             // 
             throttleResistanceSmoothNumericUpDown.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            throttleResistanceSmoothNumericUpDown.AutoSize = true;
             throttleResistanceSmoothNumericUpDown.Cursor = System.Windows.Forms.Cursors.IBeam;
             throttleResistanceSmoothNumericUpDown.Location = new System.Drawing.Point(553, 706);
             throttleResistanceSmoothNumericUpDown.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
@@ -1309,7 +1308,6 @@ namespace RacingDSX
             // throttleMaxResistanceNumericUpDown
             // 
             throttleMaxResistanceNumericUpDown.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            throttleMaxResistanceNumericUpDown.AutoSize = true;
             throttleMaxResistanceNumericUpDown.Cursor = System.Windows.Forms.Cursors.IBeam;
             throttleMaxResistanceNumericUpDown.Location = new System.Drawing.Point(553, 655);
             throttleMaxResistanceNumericUpDown.Maximum = new decimal(new int[] { 7, 0, 0, 0 });
@@ -1323,7 +1321,6 @@ namespace RacingDSX
             // throttleMinResistanceNumericUpDown
             // 
             throttleMinResistanceNumericUpDown.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            throttleMinResistanceNumericUpDown.AutoSize = true;
             throttleMinResistanceNumericUpDown.Cursor = System.Windows.Forms.Cursors.IBeam;
             throttleMinResistanceNumericUpDown.Location = new System.Drawing.Point(553, 604);
             throttleMinResistanceNumericUpDown.Maximum = new decimal(new int[] { 7, 0, 0, 0 });
@@ -1337,7 +1334,6 @@ namespace RacingDSX
             // throttleMaxStiffnessNumericUpDown
             // 
             throttleMaxStiffnessNumericUpDown.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            throttleMaxStiffnessNumericUpDown.AutoSize = true;
             throttleMaxStiffnessNumericUpDown.Cursor = System.Windows.Forms.Cursors.IBeam;
             throttleMaxStiffnessNumericUpDown.Location = new System.Drawing.Point(553, 553);
             throttleMaxStiffnessNumericUpDown.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
@@ -1353,7 +1349,6 @@ namespace RacingDSX
             // throttleMinStiffnessNumericUpDown
             // 
             throttleMinStiffnessNumericUpDown.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            throttleMinStiffnessNumericUpDown.AutoSize = true;
             throttleMinStiffnessNumericUpDown.Cursor = System.Windows.Forms.Cursors.IBeam;
             throttleMinStiffnessNumericUpDown.Location = new System.Drawing.Point(553, 502);
             throttleMinStiffnessNumericUpDown.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
@@ -1369,7 +1364,6 @@ namespace RacingDSX
             // throttleVibrationSmoothNumericUpDown
             // 
             throttleVibrationSmoothNumericUpDown.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            throttleVibrationSmoothNumericUpDown.AutoSize = true;
             throttleVibrationSmoothNumericUpDown.Cursor = System.Windows.Forms.Cursors.IBeam;
             throttleVibrationSmoothNumericUpDown.Location = new System.Drawing.Point(553, 451);
             throttleVibrationSmoothNumericUpDown.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
@@ -1384,7 +1378,6 @@ namespace RacingDSX
             // throttleMaxVibrationNumericUpDown
             // 
             throttleMaxVibrationNumericUpDown.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            throttleMaxVibrationNumericUpDown.AutoSize = true;
             throttleMaxVibrationNumericUpDown.Cursor = System.Windows.Forms.Cursors.IBeam;
             throttleMaxVibrationNumericUpDown.Location = new System.Drawing.Point(553, 400);
             throttleMaxVibrationNumericUpDown.MinimumSize = new System.Drawing.Size(41, 0);
@@ -1397,7 +1390,6 @@ namespace RacingDSX
             // throttleMinVibrationNumericUpDown
             // 
             throttleMinVibrationNumericUpDown.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            throttleMinVibrationNumericUpDown.AutoSize = true;
             throttleMinVibrationNumericUpDown.Cursor = System.Windows.Forms.Cursors.IBeam;
             throttleMinVibrationNumericUpDown.Location = new System.Drawing.Point(553, 349);
             throttleMinVibrationNumericUpDown.MinimumSize = new System.Drawing.Size(41, 0);
@@ -1410,7 +1402,6 @@ namespace RacingDSX
             // throttleVibrationStartNumericUpDown
             // 
             throttleVibrationStartNumericUpDown.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            throttleVibrationStartNumericUpDown.AutoSize = true;
             throttleVibrationStartNumericUpDown.Cursor = System.Windows.Forms.Cursors.IBeam;
             throttleVibrationStartNumericUpDown.Location = new System.Drawing.Point(553, 298);
             throttleVibrationStartNumericUpDown.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
@@ -1424,7 +1415,6 @@ namespace RacingDSX
             // throttleAccelLimitNumericUpDown
             // 
             throttleAccelLimitNumericUpDown.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            throttleAccelLimitNumericUpDown.AutoSize = true;
             throttleAccelLimitNumericUpDown.Cursor = System.Windows.Forms.Cursors.IBeam;
             throttleAccelLimitNumericUpDown.Location = new System.Drawing.Point(553, 247);
             throttleAccelLimitNumericUpDown.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
@@ -1438,7 +1428,6 @@ namespace RacingDSX
             // throttleForwardAccelScaleNumericUpDown
             // 
             throttleForwardAccelScaleNumericUpDown.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            throttleForwardAccelScaleNumericUpDown.AutoSize = true;
             throttleForwardAccelScaleNumericUpDown.Cursor = System.Windows.Forms.Cursors.IBeam;
             throttleForwardAccelScaleNumericUpDown.Location = new System.Drawing.Point(553, 196);
             throttleForwardAccelScaleNumericUpDown.MinimumSize = new System.Drawing.Size(41, 0);
@@ -1451,7 +1440,6 @@ namespace RacingDSX
             // throttleTurnAccelScaleNumericUpDown
             // 
             throttleTurnAccelScaleNumericUpDown.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            throttleTurnAccelScaleNumericUpDown.AutoSize = true;
             throttleTurnAccelScaleNumericUpDown.Cursor = System.Windows.Forms.Cursors.IBeam;
             throttleTurnAccelScaleNumericUpDown.Location = new System.Drawing.Point(553, 145);
             throttleTurnAccelScaleNumericUpDown.MinimumSize = new System.Drawing.Size(41, 0);
@@ -1464,7 +1452,6 @@ namespace RacingDSX
             // throttleGripLossNumericUpDown
             // 
             throttleGripLossNumericUpDown.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            throttleGripLossNumericUpDown.AutoSize = true;
             throttleGripLossNumericUpDown.Cursor = System.Windows.Forms.Cursors.IBeam;
             throttleGripLossNumericUpDown.Location = new System.Drawing.Point(553, 94);
             throttleGripLossNumericUpDown.MinimumSize = new System.Drawing.Size(41, 0);
@@ -1477,7 +1464,6 @@ namespace RacingDSX
             // throttleIntensityNumericUpDown
             // 
             throttleIntensityNumericUpDown.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            throttleIntensityNumericUpDown.AutoSize = true;
             throttleIntensityNumericUpDown.Cursor = System.Windows.Forms.Cursors.IBeam;
             throttleIntensityNumericUpDown.Location = new System.Drawing.Point(553, 43);
             throttleIntensityNumericUpDown.MinimumSize = new System.Drawing.Size(41, 0);
@@ -1888,7 +1874,7 @@ namespace RacingDSX
             outputTabPage.Location = new System.Drawing.Point(4, 23);
             outputTabPage.Name = "outputTabPage";
             outputTabPage.Padding = new System.Windows.Forms.Padding(3);
-            outputTabPage.Size = new System.Drawing.Size(1119, 577);
+            outputTabPage.Size = new System.Drawing.Size(1119, 584);
             outputTabPage.TabIndex = 1;
             outputTabPage.Text = "Output";
             outputTabPage.UseVisualStyleBackColor = true;
@@ -1897,7 +1883,7 @@ namespace RacingDSX
             // 
             raceGroupBox.Controls.Add(tableLayoutPanel1);
             raceGroupBox.Dock = System.Windows.Forms.DockStyle.Bottom;
-            raceGroupBox.Location = new System.Drawing.Point(3, 202);
+            raceGroupBox.Location = new System.Drawing.Point(3, 209);
             raceGroupBox.Name = "raceGroupBox";
             raceGroupBox.Size = new System.Drawing.Size(1113, 272);
             raceGroupBox.TabIndex = 3;
@@ -1964,7 +1950,7 @@ namespace RacingDSX
             // 
             noRaceGroupBox.Controls.Add(noRaceText);
             noRaceGroupBox.Dock = System.Windows.Forms.DockStyle.Bottom;
-            noRaceGroupBox.Location = new System.Drawing.Point(3, 474);
+            noRaceGroupBox.Location = new System.Drawing.Point(3, 481);
             noRaceGroupBox.Name = "noRaceGroupBox";
             noRaceGroupBox.Size = new System.Drawing.Size(1113, 100);
             noRaceGroupBox.TabIndex = 2;
@@ -1993,17 +1979,15 @@ namespace RacingDSX
             // 
             // toolStripStatusDSX
             // 
-            toolStripStatusDSX.Image = Properties.Resources.redBtn;
             toolStripStatusDSX.Name = "toolStripStatusDSX";
-            toolStripStatusDSX.Size = new System.Drawing.Size(120, 24);
+            toolStripStatusDSX.Size = new System.Drawing.Size(96, 17);
             toolStripStatusDSX.Text = "DSX Connection:";
             toolStripStatusDSX.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
             // 
             // toolStripStatusForza
             // 
-            toolStripStatusForza.Image = Properties.Resources.redBtn;
             toolStripStatusForza.Name = "toolStripStatusForza";
-            toolStripStatusForza.Size = new System.Drawing.Size(124, 24);
+            toolStripStatusForza.Size = new System.Drawing.Size(100, 17);
             toolStripStatusForza.Text = "Game Is Running:";
             toolStripStatusForza.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
             // 
@@ -2013,7 +1997,7 @@ namespace RacingDSX
             toolStripVerboseMode.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { verboseModeOffToolStripMenuItem, verboseModeLowToolStripMenuItem, verboseModeFullToolStripMenuItem });
             toolStripVerboseMode.ImageTransparentColor = System.Drawing.Color.Magenta;
             toolStripVerboseMode.Name = "toolStripVerboseMode";
-            toolStripVerboseMode.Size = new System.Drawing.Size(95, 27);
+            toolStripVerboseMode.Size = new System.Drawing.Size(95, 20);
             toolStripVerboseMode.Text = "Verbose Mode";
             // 
             // verboseModeOffToolStripMenuItem
@@ -2044,25 +2028,23 @@ namespace RacingDSX
             // 
             statusStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
             statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripStatusDSX, toolStripStatusController, toolStripStatusForza, toolStripStatusUDPForza, toolStripVerboseMode, toolStripDSXPortButton, toolStripControllerButton, toolStripAppCheckButton, toolStripTheme });
-            statusStrip1.Location = new System.Drawing.Point(0, 604);
+            statusStrip1.Location = new System.Drawing.Point(0, 611);
             statusStrip1.Name = "statusStrip1";
-            statusStrip1.Size = new System.Drawing.Size(1293, 29);
+            statusStrip1.Size = new System.Drawing.Size(1293, 22);
             statusStrip1.TabIndex = 0;
             statusStrip1.Text = "statusStrip1";
             // 
             // toolStripStatusController
             // 
-            toolStripStatusController.Image = Properties.Resources.redBtn;
             toolStripStatusController.Name = "toolStripStatusController";
-            toolStripStatusController.Size = new System.Drawing.Size(152, 24);
+            toolStripStatusController.Size = new System.Drawing.Size(128, 17);
             toolStripStatusController.Text = "Controller Connection:";
             toolStripStatusController.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
             // 
             // toolStripStatusUDPForza
             // 
-            toolStripStatusUDPForza.Image = Properties.Resources.redBtn;
             toolStripStatusUDPForza.Name = "toolStripStatusUDPForza";
-            toolStripStatusUDPForza.Size = new System.Drawing.Size(130, 24);
+            toolStripStatusUDPForza.Size = new System.Drawing.Size(106, 17);
             toolStripStatusUDPForza.Text = "Game Connection:";
             toolStripStatusUDPForza.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
             // 
@@ -2073,7 +2055,7 @@ namespace RacingDSX
             toolStripDSXPortButton.Image = (System.Drawing.Image)resources.GetObject("toolStripDSXPortButton.Image");
             toolStripDSXPortButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             toolStripDSXPortButton.Name = "toolStripDSXPortButton";
-            toolStripDSXPortButton.Size = new System.Drawing.Size(66, 27);
+            toolStripDSXPortButton.Size = new System.Drawing.Size(66, 20);
             toolStripDSXPortButton.Text = "DSX Port";
             toolStripDSXPortButton.Click += toolStripDSXPortButton_Click;
             // 
@@ -2091,7 +2073,7 @@ namespace RacingDSX
             toolStripControllerButton.Image = (System.Drawing.Image)resources.GetObject("toolStripControllerButton.Image");
             toolStripControllerButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             toolStripControllerButton.Name = "toolStripControllerButton";
-            toolStripControllerButton.Size = new System.Drawing.Size(73, 27);
+            toolStripControllerButton.Size = new System.Drawing.Size(73, 20);
             toolStripControllerButton.Text = "Controller";
             // 
             // toolStripAppCheckButton
@@ -2101,7 +2083,7 @@ namespace RacingDSX
             toolStripAppCheckButton.Image = (System.Drawing.Image)resources.GetObject("toolStripAppCheckButton.Image");
             toolStripAppCheckButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             toolStripAppCheckButton.Name = "toolStripAppCheckButton";
-            toolStripAppCheckButton.Size = new System.Drawing.Size(123, 27);
+            toolStripAppCheckButton.Size = new System.Drawing.Size(123, 20);
             toolStripAppCheckButton.Text = "App Check Enabled";
             // 
             // toolStripAppCheckOffItem
@@ -2124,7 +2106,7 @@ namespace RacingDSX
             toolStripTheme.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripThemePlain, toolStripThemeLight, toolStripThemeDark, toolStripThemeAmoled, toolStripThemeAuto });
             toolStripTheme.ImageTransparentColor = System.Drawing.Color.Magenta;
             toolStripTheme.Name = "toolStripTheme";
-            toolStripTheme.Size = new System.Drawing.Size(57, 27);
+            toolStripTheme.Size = new System.Drawing.Size(57, 20);
             toolStripTheme.Text = "Theme";
             toolStripTheme.ToolTipText = "toolStripTheme";
             // 

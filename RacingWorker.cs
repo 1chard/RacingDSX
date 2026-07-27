@@ -1,15 +1,11 @@
 ﻿using DualSenseSharp;
 using RacingDSX.Config;
+using RacingDSX.DSX;
 using RacingDSX.GameParsers;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
-using System.Text.Json;
-using static RacingDSX.RacingWorker;
 
 namespace RacingDSX
 {
@@ -153,18 +149,6 @@ namespace RacingDSX
                 reportableInstruction = parser.GetInRaceLightbarInstruction();
                 instructionsList.AddRange(reportableInstruction.Instructions);
             }
-
-
-            Console.WriteLine();
-            foreach (Instruction instruction in instructionsList)
-            {
-                foreach (var param in instruction.Parameters)
-                {
-                    Console.Write(" " + param);
-                }
-                Console.WriteLine();
-            }
-
 
             Packet p = new Packet
             {

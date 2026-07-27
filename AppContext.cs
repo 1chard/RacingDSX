@@ -19,6 +19,7 @@ namespace RacingDSX
         UI ui;
         DateTime lastUpdate = DateTime.MinValue;
         ToolStripMenuItem dsxConnectionMenuItem;
+        ToolStripMenuItem controllerConnectionMenuItem;
         ToolStripMenuItem forzaConnectionMenuItem;
         ToolStripMenuItem udpForzaConnectionMenuItem;
         ToolStripMenuItem appCheckMenuItem;
@@ -47,6 +48,10 @@ namespace RacingDSX
             dsxConnectionMenuItem = new ToolStripMenuItem("")
             {
                 Enabled = false
+            }; 
+            controllerConnectionMenuItem = new ToolStripMenuItem("")
+            {
+                Enabled = false
             };
             forzaConnectionMenuItem = new ToolStripMenuItem("")
             {
@@ -63,6 +68,7 @@ namespace RacingDSX
 
             var menu = new ContextMenuStrip();
             menu.Items.Add(dsxConnectionMenuItem);
+            menu.Items.Add(controllerConnectionMenuItem);
             menu.Items.Add(forzaConnectionMenuItem);
             menu.Items.Add(udpForzaConnectionMenuItem);
             menu.Items.Add(appCheckMenuItem);
@@ -91,9 +97,10 @@ namespace RacingDSX
                 }
 
                 dsxConnectionMenuItem.Text = $"DSX Connection: {(core.bDsxConnected ? "On" : "Off")}";
+                controllerConnectionMenuItem.Text = $"Controller Connection: {(core.bControllerConnected ? "On" : "Off")}";
                 forzaConnectionMenuItem.Text = $"Game Is Running: {(core.bForzaConnected ? "On" : "Off")}";
                 udpForzaConnectionMenuItem.Text = $"Game Connection: {(bConnectionUdp ? "On" : "Off")}";
-                appCheckMenuItem.Text = $"App Check: {(core.currentSettings.DisableAppCheck && core.targetExecutableName == null ? "Off" : "On")}";
+                appCheckMenuItem.Text = $"App Check: {(core.CurrentSettings.DisableAppCheck && core.targetExecutableName == null ? "Off" : "On")}";
 
                 await Task.Delay(1000);
             }
@@ -130,14 +137,13 @@ namespace RacingDSX
 
                 if (core.SwitchActiveProfile(profileName))
                 {
-                    core.StopRacingDSXThread();
-                    core.StartRacingDSXThread();
+                    core.RestartAppCheckThread();
                 }
             }
 
             if (core.racingDSXTask == null)
             {
-                if (core.bForzaConnected && core.bDsxConnected)
+                if (core.bForzaConnected)
                 {
                     core.StartRacingDSXThread();
                 }

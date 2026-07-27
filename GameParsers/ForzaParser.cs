@@ -1,11 +1,6 @@
 ﻿using RacingDSX.Config;
-using RacingDSX.Properties;
+using RacingDSX.DSX;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static RacingDSX.DsxSender;
 using static RacingDSX.RacingWorker;
 
 namespace RacingDSX.GameParsers
@@ -70,13 +65,13 @@ namespace RacingDSX.GameParsers
             }
 
 
-            RightTrigger.Parameters = new object[] { controllerIndex, Trigger.Right, TriggerMode.Normal, 0, 0 };
-            LeftTrigger.Parameters = new object[] { controllerIndex, Trigger.Left, TriggerMode.Normal, 0, 0 };
+            RightTrigger.Parameters = [controllerIndex, Trigger.Right, DSX.TriggerMode.Normal, 0, 0];
+            LeftTrigger.Parameters = [controllerIndex, Trigger.Left, DSX.TriggerMode.Normal, 0, 0];
 
             #region Light Bar color
-            int CPIcolorR = 255;
-            int CPIcolorG = 255;
-            int CPIcolorB = 255;
+            int CPIcolorR;
+            int CPIcolorG;
+            int CPIcolorB;
 
             float cpiRatio = currentCPI / MaxCPI;
 
@@ -123,14 +118,12 @@ namespace RacingDSX.GameParsers
                 CPIcolorB = ColorClassX[2];
             }
 
-            LightBar.Parameters = new object[] { controllerIndex, CPIcolorR, CPIcolorG, CPIcolorB };
+            LightBar.Parameters = [controllerIndex, CPIcolorR, CPIcolorG, CPIcolorB];
             #endregion
 
+            reportableInstruction.RacingReportStructs.Add(new RacingReportStruct(VerboseLevel.Limited, RacingReportStruct.ReportType.NORACE, $"No race going on. Normal Triggers. Car's Class = {currentClass}; CPI = {currentCPI}; CPI Ratio = {cpiRatio}; Color [{CPIcolorR}, {CPIcolorG}, {CPIcolorB}]"));
 
-                reportableInstruction.RacingReportStructs.Add(new RacingReportStruct(VerboseLevel.Limited, RacingReportStruct.ReportType.NORACE, $"No race going on. Normal Triggers. Car's Class = {currentClass}; CPI = {currentCPI}; CPI Ratio = {cpiRatio}; Color [{CPIcolorR}, {CPIcolorG}, {CPIcolorB}]"));
-            
-
-            reportableInstruction.Instructions = new Instruction[] { LightBar, LeftTrigger, RightTrigger };
+            reportableInstruction.Instructions = [LightBar, LeftTrigger, RightTrigger];
             return reportableInstruction;
         }
 
@@ -139,8 +132,6 @@ namespace RacingDSX.GameParsers
         {
             data = new DataPacket();
 
-
-
             // sled
             data.IsRaceOn = packet.IsRaceOn();
             data.EngineMaxRpm = packet.EngineMaxRpm();
@@ -148,7 +139,7 @@ namespace RacingDSX.GameParsers
             data.CurrentEngineRpm = packet.CurrentEngineRpm();
             data.AccelerationX = packet.AccelerationX();
             data.AccelerationZ = packet.AccelerationZ();
-         
+
             data.TireCombinedSlipFrontLeft = packet.TireCombinedSlipFl();
             data.TireCombinedSlipFrontRight = packet.TireCombinedSlipFr();
             data.TireCombinedSlipRearLeft = packet.TireCombinedSlipRl();
@@ -165,84 +156,84 @@ namespace RacingDSX.GameParsers
 
 
             data.FourWheelCombinedTireSlip = (Math.Abs(data.TireCombinedSlipFrontLeft) + Math.Abs(data.TireCombinedSlipFrontRight) + Math.Abs(data.TireCombinedSlipRearLeft) + Math.Abs(data.TireCombinedSlipRearRight)) / 4;
-           data.FrontWheelsCombinedTireSlip = (Math.Abs(data.TireCombinedSlipFrontLeft) + Math.Abs(data.TireCombinedSlipFrontRight)) / 2;
-           data.RearWheelsCombinedTireSlip = (Math.Abs(data.TireCombinedSlipRearLeft) + Math.Abs(data.TireCombinedSlipRearRight)) / 2;
+            data.FrontWheelsCombinedTireSlip = (Math.Abs(data.TireCombinedSlipFrontLeft) + Math.Abs(data.TireCombinedSlipFrontRight)) / 2;
+            data.RearWheelsCombinedTireSlip = (Math.Abs(data.TireCombinedSlipRearLeft) + Math.Abs(data.TireCombinedSlipRearRight)) / 2;
 
 
-           /* data.TimestampMS = packet.TimestampMs();
-            data.AccelerationY = packet.AccelerationY();
+            /* data.TimestampMS = packet.TimestampMs();
+             data.AccelerationY = packet.AccelerationY();
 
-            data.SuspensionTravelMetersFrontLeft = packet.SuspensionTravelMetersFl();
-            data.SuspensionTravelMetersFrontRight = packet.SuspensionTravelMetersFr();
-            data.SuspensionTravelMetersRearLeft = packet.SuspensionTravelMetersRl();
-            data.SuspensionTravelMetersRearRight = packet.SuspensionTravelMetersRr();
-            data.CarOrdinal = packet.CarOrdinal();
-            data.DrivetrainType = packet.DriveTrain();
-            data.NumCylinders = packet.NumCylinders();
+             data.SuspensionTravelMetersFrontLeft = packet.SuspensionTravelMetersFl();
+             data.SuspensionTravelMetersFrontRight = packet.SuspensionTravelMetersFr();
+             data.SuspensionTravelMetersRearLeft = packet.SuspensionTravelMetersRl();
+             data.SuspensionTravelMetersRearRight = packet.SuspensionTravelMetersRr();
+             data.CarOrdinal = packet.CarOrdinal();
+             data.DrivetrainType = packet.DriveTrain();
+             data.NumCylinders = packet.NumCylinders();
 
-            // dash
-            data.PositionX = packet.PositionX();
-            data.PositionY = packet.PositionY();
-            data.PositionZ = packet.PositionZ();
-            data.Torque = packet.Torque();
-            data.TireTempFl = packet.TireTempFl();
-            data.TireTempFr = packet.TireTempFr();
-            data.TireTempRl = packet.TireTempRl();
-            data.TireTempRr = packet.TireTempRr();
-            data.Boost = packet.Boost();
-            data.Fuel = packet.Fuel();
-            data.Distance = packet.Distance();
-            data.BestLapTime = packet.BestLapTime();
-            data.LastLapTime = packet.LastLapTime();
-            data.CurrentLapTime = packet.CurrentLapTime();
-            data.CurrentRaceTime = packet.CurrentRaceTime();
-            data.Lap = packet.Lap();
-            data.RacePosition = packet.RacePosition();
-            data.Clutch = packet.Clutch();
-            data.Handbrake = packet.Handbrake();
-            data.Gear = packet.Gear();
-            data.Steer = packet.Steer();
-            data.NormalDrivingLine = packet.NormalDrivingLine();
-            data.NormalAiBrakeDifference = packet.NormalAiBrakeDifference();
-            data.VelocityX = packet.VelocityX();
-            data.VelocityY = packet.VelocityY();
-            data.VelocityZ = packet.VelocityZ();
-            data.AngularVelocityX = packet.AngularVelocityX();
-            data.AngularVelocityY = packet.AngularVelocityY();
-            data.AngularVelocityZ = packet.AngularVelocityZ();
-            data.Yaw = packet.Yaw();
-            data.Pitch = packet.Pitch();
-            data.Roll = packet.Roll();
-            data.NormalizedSuspensionTravelFrontLeft = packet.NormSuspensionTravelFl();
-            data.NormalizedSuspensionTravelFrontRight = packet.NormSuspensionTravelFr();
-            data.NormalizedSuspensionTravelRearLeft = packet.NormSuspensionTravelRl();
-            data.NormalizedSuspensionTravelRearRight = packet.NormSuspensionTravelRr();
-            data.TireSlipRatioFrontLeft = packet.TireSlipRatioFl();
-            data.TireSlipRatioFrontRight = packet.TireSlipRatioFr();
-            data.TireSlipRatioRearLeft = packet.TireSlipRatioRl();
-            data.TireSlipRatioRearRight = packet.TireSlipRatioRr();
-            data.WheelRotationSpeedFrontLeft = packet.WheelRotationSpeedFl();
-            data.WheelRotationSpeedFrontRight = packet.WheelRotationSpeedFr();
-            data.WheelRotationSpeedRearLeft = packet.WheelRotationSpeedRl();
-            data.WheelRotationSpeedRearRight = packet.WheelRotationSpeedRr();
-            data.WheelOnRumbleStripFrontLeft = packet.WheelOnRumbleStripFl();
-            data.WheelOnRumbleStripFrontRight = packet.WheelOnRumbleStripFr();
-            data.WheelOnRumbleStripRearLeft = packet.WheelOnRumbleStripRl();
-            data.WheelOnRumbleStripRearRight = packet.WheelOnRumbleStripRr();
-            data.WheelInPuddleDepthFrontLeft = packet.WheelInPuddleFl();
-            data.WheelInPuddleDepthFrontRight = packet.WheelInPuddleFr();
-            data.WheelInPuddleDepthRearLeft = packet.WheelInPuddleRl();
-            data.WheelInPuddleDepthRearRight = packet.WheelInPuddleRr();
-            data.SurfaceRumbleFrontLeft = packet.SurfaceRumbleFl();
-            data.SurfaceRumbleFrontRight = packet.SurfaceRumbleFr();
-            data.SurfaceRumbleRearLeft = packet.SurfaceRumbleRl();
-            data.SurfaceRumbleRearRight = packet.SurfaceRumbleRr();
-            data.TireSlipAngleFrontLeft = packet.TireSlipAngleFl();
-            data.TireSlipAngleFrontRight = packet.TireSlipAngleFr();
-            data.TireSlipAngleRearLeft = packet.TireSlipAngleRl();
-            data.TireSlipAngleRearRight = packet.TireSlipAngleRr();
-            return data;
-            throw new NotImplementedException();*/
+             // dash
+             data.PositionX = packet.PositionX();
+             data.PositionY = packet.PositionY();
+             data.PositionZ = packet.PositionZ();
+             data.Torque = packet.Torque();
+             data.TireTempFl = packet.TireTempFl();
+             data.TireTempFr = packet.TireTempFr();
+             data.TireTempRl = packet.TireTempRl();
+             data.TireTempRr = packet.TireTempRr();
+             data.Boost = packet.Boost();
+             data.Fuel = packet.Fuel();
+             data.Distance = packet.Distance();
+             data.BestLapTime = packet.BestLapTime();
+             data.LastLapTime = packet.LastLapTime();
+             data.CurrentLapTime = packet.CurrentLapTime();
+             data.CurrentRaceTime = packet.CurrentRaceTime();
+             data.Lap = packet.Lap();
+             data.RacePosition = packet.RacePosition();
+             data.Clutch = packet.Clutch();
+             data.Handbrake = packet.Handbrake();
+             data.Gear = packet.Gear();
+             data.Steer = packet.Steer();
+             data.NormalDrivingLine = packet.NormalDrivingLine();
+             data.NormalAiBrakeDifference = packet.NormalAiBrakeDifference();
+             data.VelocityX = packet.VelocityX();
+             data.VelocityY = packet.VelocityY();
+             data.VelocityZ = packet.VelocityZ();
+             data.AngularVelocityX = packet.AngularVelocityX();
+             data.AngularVelocityY = packet.AngularVelocityY();
+             data.AngularVelocityZ = packet.AngularVelocityZ();
+             data.Yaw = packet.Yaw();
+             data.Pitch = packet.Pitch();
+             data.Roll = packet.Roll();
+             data.NormalizedSuspensionTravelFrontLeft = packet.NormSuspensionTravelFl();
+             data.NormalizedSuspensionTravelFrontRight = packet.NormSuspensionTravelFr();
+             data.NormalizedSuspensionTravelRearLeft = packet.NormSuspensionTravelRl();
+             data.NormalizedSuspensionTravelRearRight = packet.NormSuspensionTravelRr();
+             data.TireSlipRatioFrontLeft = packet.TireSlipRatioFl();
+             data.TireSlipRatioFrontRight = packet.TireSlipRatioFr();
+             data.TireSlipRatioRearLeft = packet.TireSlipRatioRl();
+             data.TireSlipRatioRearRight = packet.TireSlipRatioRr();
+             data.WheelRotationSpeedFrontLeft = packet.WheelRotationSpeedFl();
+             data.WheelRotationSpeedFrontRight = packet.WheelRotationSpeedFr();
+             data.WheelRotationSpeedRearLeft = packet.WheelRotationSpeedRl();
+             data.WheelRotationSpeedRearRight = packet.WheelRotationSpeedRr();
+             data.WheelOnRumbleStripFrontLeft = packet.WheelOnRumbleStripFl();
+             data.WheelOnRumbleStripFrontRight = packet.WheelOnRumbleStripFr();
+             data.WheelOnRumbleStripRearLeft = packet.WheelOnRumbleStripRl();
+             data.WheelOnRumbleStripRearRight = packet.WheelOnRumbleStripRr();
+             data.WheelInPuddleDepthFrontLeft = packet.WheelInPuddleFl();
+             data.WheelInPuddleDepthFrontRight = packet.WheelInPuddleFr();
+             data.WheelInPuddleDepthRearLeft = packet.WheelInPuddleRl();
+             data.WheelInPuddleDepthRearRight = packet.WheelInPuddleRr();
+             data.SurfaceRumbleFrontLeft = packet.SurfaceRumbleFl();
+             data.SurfaceRumbleFrontRight = packet.SurfaceRumbleFr();
+             data.SurfaceRumbleRearLeft = packet.SurfaceRumbleRl();
+             data.SurfaceRumbleRearRight = packet.SurfaceRumbleRr();
+             data.TireSlipAngleFrontLeft = packet.TireSlipAngleFl();
+             data.TireSlipAngleFrontRight = packet.TireSlipAngleFr();
+             data.TireSlipAngleRearLeft = packet.TireSlipAngleRl();
+             data.TireSlipAngleRearRight = packet.TireSlipAngleRr();
+             return data;
+             throw new NotImplementedException();*/
         }
     }
 }

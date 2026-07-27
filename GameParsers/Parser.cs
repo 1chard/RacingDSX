@@ -1,13 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
-using RacingDSX.Config;
-using RacingDSX.Properties;
+﻿using RacingDSX.DSX;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static RacingDSX.RacingWorker;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace RacingDSX.GameParsers
 {
@@ -19,8 +12,8 @@ namespace RacingDSX.GameParsers
         protected Instruction LightBar = new Instruction(InstructionType.RGBUpdate);
         protected int controllerIndex = 0;
         protected DataPacket data;
-        protected RacingDSX.Config.Config settings;
-        protected RacingDSX.Config.Profile activeProfile;
+        protected Config.Config settings;
+        protected Config.Profile activeProfile;
 
 
         protected int lastThrottleResistance = 1;
@@ -38,7 +31,7 @@ namespace RacingDSX.GameParsers
         protected uint RPMAccumulatorTriggerRaceOff = 200;
 
 
-        protected Parser(RacingDSX.Config.Config settings)
+        protected Parser(Config.Config settings)
         {
             this.settings = settings;
             activeProfile = settings.ActiveProfile;
@@ -51,10 +44,10 @@ namespace RacingDSX.GameParsers
         public virtual ReportableInstruction GetPreRaceInstructions()
         {
             ReportableInstruction p = new ReportableInstruction();
-            RightTrigger.Parameters = new object[] { controllerIndex, Trigger.Right, TriggerMode.Normal, 0, 0 };
-            LeftTrigger.Parameters = new object[] { controllerIndex, Trigger.Left, TriggerMode.Normal, 0, 0 };
-            LightBar.Parameters = new object[] { controllerIndex, 220, 120, 220 };
-            p.Instructions = new Instruction[] { LightBar, LeftTrigger, RightTrigger };
+            RightTrigger.Parameters = [controllerIndex, Trigger.Right, TriggerMode.Normal, 0, 0];
+            LeftTrigger.Parameters = [controllerIndex, Trigger.Left, TriggerMode.Normal, 0, 0];
+            LightBar.Parameters = [controllerIndex, 220, 120, 220];
+            p.Instructions = [LightBar, LeftTrigger, RightTrigger];
 
             return p;
         }
@@ -82,17 +75,17 @@ namespace RacingDSX.GameParsers
             }
 
             // Set LightBar instruction
-            LightBar.Parameters = new object[] { controllerIndex, RedChannel, GreenChannel, BlueChannel, Brightness };
+            LightBar.Parameters = [controllerIndex, RedChannel, GreenChannel, BlueChannel, Brightness];
 
             // Add report for verbose output
             reportableInstruction.RacingReportStructs.Add(new RacingReportStruct(
-                VerboseLevel.Full,
+                Config.VerboseLevel.Full,
                 $"Engine RPM: {data.CurrentEngineRpm}; Engine Max RPM: {data.EngineMaxRpm}; Engine Idle RPM: {data.EngineIdleRpm}; " +
                 $"RPM Ratio: {CurrentRPMRatio:F2}; Light Color: R{RedChannel} G{GreenChannel} B{BlueChannel}"
             ));
 
             // Set instructions
-            reportableInstruction.Instructions = new Instruction[] { LightBar };
+            reportableInstruction.Instructions = [LightBar];
 
             return reportableInstruction;
         }
@@ -106,7 +99,7 @@ namespace RacingDSX.GameParsers
             int freq = 0;
             int filteredFreq = 0;
             //Update the left(Brake) trigger
-            BrakeSettings brakeSettings = activeProfile.brakeSettings;
+            Config.BrakeSettings brakeSettings = activeProfile.brakeSettings;
             // Define losing grip as tires slipping while braking a fair ammount
             bool bLosingBrakeGrip = data.FourWheelCombinedTireSlip > brakeSettings.GripLossValue && data.Brake > 100;
 
@@ -135,7 +128,7 @@ namespace RacingDSX.GameParsers
                             filteredFreq *brakeSettings.EffectIntensity, filteredResistance * brakeSettings.EffectIntensity, brakeSettings.VibrationStart, 0, 0, 0, 0 };
                 }
                 //Set left trigger to the custom mode VibrateResitance with values of Frequency = freq, Stiffness = 104, startPostion = 76. 
-                reportableInstruction.RacingReportStructs.Add(new RacingReportStruct(VerboseLevel.Limited, RacingReportStruct.ReportType.RACING, RacingReportStruct.RacingReportType.BRAKE_VIBRATION, $"Setting Brake to vibration mode with freq: {filteredFreq}\r\n Resistance: {filteredResistance}"));
+                reportableInstruction.RacingReportStructs.Add(new RacingReportStruct(Config.VerboseLevel.Limited, RacingReportStruct.ReportType.RACING, RacingReportStruct.RacingReportType.BRAKE_VIBRATION, $"Setting Brake to vibration mode with freq: {filteredFreq}\r\n Resistance: {filteredResistance}"));
 
             }
             else
@@ -147,12 +140,12 @@ namespace RacingDSX.GameParsers
 
                 LeftTrigger.Parameters = new object[] { controllerIndex, Trigger.Left, TriggerMode.Resistance, 0, filteredResistance * brakeSettings.EffectIntensity };
 
-                reportableInstruction.RacingReportStructs.Add(new RacingReportStruct(VerboseLevel.Limited, RacingReportStruct.ReportType.RACING, RacingReportStruct.RacingReportType.BRAKE_VIBRATION, ""));
+                reportableInstruction.RacingReportStructs.Add(new RacingReportStruct(Config.VerboseLevel.Limited, RacingReportStruct.ReportType.RACING, RacingReportStruct.RacingReportType.BRAKE_VIBRATION, ""));
 
             }
 
 
-            reportableInstruction.RacingReportStructs.Add(new RacingReportStruct(VerboseLevel.Limited, RacingReportStruct.ReportType.RACING, RacingReportStruct.RacingReportType.BRAKE, $"Brake: {data.Brake}\r\n Brake Resistance: {filteredResistance}\r\n Tire Slip: {data.FourWheelCombinedTireSlip} \r\n FLCPS: {data.frontLeftContactPatchV} \r\n speed: {data.Speed}"));
+            reportableInstruction.RacingReportStructs.Add(new RacingReportStruct(Config.VerboseLevel.Limited, RacingReportStruct.ReportType.RACING, RacingReportStruct.RacingReportType.BRAKE, $"Brake: {data.Brake}\r\n Brake Resistance: {filteredResistance}\r\n Tire Slip: {data.FourWheelCombinedTireSlip} \r\n FLCPS: {data.frontLeftContactPatchV} \r\n speed: {data.Speed}"));
 
             reportableInstruction.Instructions = new Instruction[] { LeftTrigger };
             return reportableInstruction;
@@ -169,7 +162,7 @@ namespace RacingDSX.GameParsers
             int filteredFreq = 0;
 
             //Set the updates for the right Trigger(Throttle)
-            ThrottleSettings throttleSettings = activeProfile.throttleSettings;
+            Config.ThrottleSettings throttleSettings = activeProfile.throttleSettings;
             avgAccel = (float)Math.Sqrt((throttleSettings.TurnAccelerationScale * (data.AccelerationX * data.AccelerationX)) + (throttleSettings.ForwardAccelerationScale * (data.AccelerationZ * data.AccelerationZ)));
 
             // Define losing grip as front tires slipping or rear tires slipping while accelerating a fair ammount
@@ -207,7 +200,7 @@ namespace RacingDSX.GameParsers
                             filteredFreq * throttleSettings.EffectIntensity, filteredResistance * throttleSettings.EffectIntensity,throttleSettings.VibrationModeStart, 0, 0, 0, 0 };
                 }
 
-                reportableInstruction.RacingReportStructs.Add(new RacingReportStruct(VerboseLevel.Limited, RacingReportStruct.ReportType.RACING, RacingReportStruct.RacingReportType.THROTTLE_VIBRATION, $"Setting Throttle to vibration mode with freq: {filteredFreq}\r\n Resistance: {filteredResistance}"));
+                reportableInstruction.RacingReportStructs.Add(new RacingReportStruct(Config.VerboseLevel.Limited, RacingReportStruct.ReportType.RACING, RacingReportStruct.RacingReportType.THROTTLE_VIBRATION, $"Setting Throttle to vibration mode with freq: {filteredFreq}\r\n Resistance: {filteredResistance}"));
 
             }
             else
@@ -219,10 +212,10 @@ namespace RacingDSX.GameParsers
                 lastThrottleResistance = filteredResistance;
                 RightTrigger.Parameters = new object[] { controllerIndex, Trigger.Right, TriggerMode.Resistance, 0, filteredResistance * throttleSettings.EffectIntensity };
 
-                reportableInstruction.RacingReportStructs.Add(new RacingReportStruct(VerboseLevel.Limited, RacingReportStruct.ReportType.RACING, RacingReportStruct.RacingReportType.THROTTLE_VIBRATION, ""));
+                reportableInstruction.RacingReportStructs.Add(new RacingReportStruct(Config.VerboseLevel.Limited, RacingReportStruct.ReportType.RACING, RacingReportStruct.RacingReportType.THROTTLE_VIBRATION, ""));
 
             }
-            reportableInstruction.RacingReportStructs.Add(new RacingReportStruct(VerboseLevel.Limited, RacingReportStruct.ReportType.RACING, RacingReportStruct.RacingReportType.THROTTLE, $"Average Acceleration: {avgAccel}\r\n Throttle Resistance: {filteredResistance}\r\n Accelerator: {data.Accelerator}"));
+            reportableInstruction.RacingReportStructs.Add(new RacingReportStruct(Config.VerboseLevel.Limited, RacingReportStruct.ReportType.RACING, RacingReportStruct.RacingReportType.THROTTLE, $"Average Acceleration: {avgAccel}\r\n Throttle Resistance: {filteredResistance}\r\n Accelerator: {data.Accelerator}"));
             reportableInstruction.Instructions = new Instruction[] { RightTrigger };
 
             return reportableInstruction;

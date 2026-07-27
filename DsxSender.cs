@@ -1,8 +1,6 @@
 ﻿using RacingDSX.Config;
-using RacingDSX.GameParsers;
-using RacingDSX.Properties;
+using RacingDSX.DSX;
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;

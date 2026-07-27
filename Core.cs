@@ -1,14 +1,11 @@
 ﻿using DualSenseSharp;
-using HidSharp.Utility;
 using RacingDSX.Config;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using static RacingDSX.RacingWorker;
 
 namespace RacingDSX
@@ -17,14 +14,15 @@ namespace RacingDSX
     {
         public RacingWorker racingWorker;
         public AppCheckThread appCheckWorker;
-        public RacingDSX.Config.Config currentSettings;
-        public RacingDSX.Config.Profile selectedProfile;
-        public BindingList<String> executables = new BindingList<string>();
+        public Config.Config CurrentSettings;
+        public Profile selectedProfile;
+        public BindingList<string> executables = new();
 
         public Dictionary<string, (DualSense BluetoothDs, DualSense UsbDs)> dualSenses = new Dictionary<string, (DualSense, DualSense)>();
 
         public bool bForzaConnected = false;
         public bool bDsxConnected = false;
+        public bool bControllerConnected = false;
 
         public Task appCheckTask;
         public Task racingDSXTask;
@@ -56,7 +54,7 @@ namespace RacingDSX
         public Core(Process process, Config.Config config, Profile profile)
         {
             this.process = process;
-            currentSettings = config;
+            CurrentSettings = config;
             selectedProfile = profile;
 
             if (process != null)
@@ -69,19 +67,19 @@ namespace RacingDSX
         public void Initialize(Action<RacingReportStruct> racingDsxHandler, Action<AppCheckReportStruct> appCheckHandler, Action<DualSenseReportStruct> dualSenseHandler)
         {
             var forzaProgressHandler = new Progress<RacingReportStruct>(racingDsxHandler);
-            racingWorker = new RacingWorker(currentSettings, forzaProgressHandler, () => activeController);
+            racingWorker = new RacingWorker(CurrentSettings, forzaProgressHandler, () => activeController);
 
             var progressHandler = new Progress<AppCheckReportStruct>(appCheckHandler);
-            appCheckWorker = new AppCheckThread(ref currentSettings, progressHandler, process);
+            appCheckWorker = new AppCheckThread(ref CurrentSettings, progressHandler, process);
 
-            if (!currentSettings.DisableAppCheck || targetExecutableName != null)
+            if (!CurrentSettings.DisableAppCheck || targetExecutableName != null)
             {
                 StartAppCheckThread();
             }
             else
             {
-                bDsxConnected = true;
                 bForzaConnected = true;
+                bDsxConnected = CurrentSettings.DSXPort != null;
                 StartRacingDSXThread();
             }
 
@@ -101,25 +99,30 @@ namespace RacingDSX
             {
                 return false;
             }
-            if (currentSettings.ActiveProfile != null && currentSettings.ActiveProfile.Name == profileName)
+            if (CurrentSettings.ActiveProfile != null && CurrentSettings.ActiveProfile.Name == profileName)
                 return false;
 
-            if (profileName != null && currentSettings.Profiles.ContainsKey(profileName))
+            if (profileName != null && CurrentSettings.Profiles.ContainsKey(profileName))
             {
-                profile = currentSettings.Profiles[profileName];
+                profile = CurrentSettings.Profiles[profileName];
 
             }
-            currentSettings.ActiveProfile = profile;
+            CurrentSettings.ActiveProfile = profile;
             ConfigHandler.SaveConfig();
 
             return true;
         }
 
+        public void RestartRacingDSXThread()
+        {
+            StopRacingDSXThread();
+            StartRacingDSXThread();
+        }
         public void StartRacingDSXThread()
         {
             if (racingDSXTask != null || racingWorker == null)
                 return;
-            if (currentSettings.ActiveProfile == null)
+            if (CurrentSettings.ActiveProfile == null)
                 return;
 
             racingDSXTask = Task.Factory.StartNew(racingWorker.Run, TaskCreationOptions.LongRunning);
@@ -175,6 +178,8 @@ namespace RacingDSX
             activeController = dualSense;
             macAddressAutoConnect = dualSense.UniqueId.ToString();
 
+            bControllerConnected = true;
+
             dualSenseHandler(new DualSenseReportStruct(DualSenseReportStruct.StatusType.SELECT, "Controller selected", true, dualSense.UniqueId.ToString()));
         }
 
@@ -182,6 +187,8 @@ namespace RacingDSX
         {
             var mac = activeController.UniqueId.ToString();
             activeController = null;
+
+            bControllerConnected = false;
 
             dualSenseHandler(new DualSenseReportStruct(DualSenseReportStruct.StatusType.UNSELECT, "Controller unselected", true, mac));
         }
@@ -195,7 +202,7 @@ namespace RacingDSX
             try
             {
                 dualSense.Open();
-                mac = (await dualSense.ComputeUniqueId()).ToString();
+                mac = (await dualSense.ComputeUniqueId())?.ToString();
                 if (mac == null)
                 {
                     message = $"Failed to connect a controller";
@@ -218,13 +225,17 @@ namespace RacingDSX
                 dualSenses[mac] = obj;
                 dualSense.Disconnected += (x, ev) => RemoveController(dualSense, false);
 
-                if(mac != null && mac == activeController?.UniqueId.ToString() && dualSense.IsBluetooth == false && activeController.IsBluetooth) // prefer usb
-                    shouldSelectController = true;
-                else if((macAddressAutoConnect == null && currentSettings.DSXPort == null) || macAddressAutoConnect == mac)
+                if(mac != null)
                 {
-                    macAddressAutoConnect = mac;
-                    shouldSelectController = true;
+                    if (mac == activeController?.UniqueId.ToString() && dualSense.IsBluetooth == false && activeController.IsBluetooth) // prefer usb
+                        shouldSelectController = true;
+                    else if ((macAddressAutoConnect == null && CurrentSettings.DSXPort == null) || macAddressAutoConnect == mac)
+                    {
+                        macAddressAutoConnect = mac;
+                        shouldSelectController = true;
+                    }
                 }
+                
                 
                 message = $"Controller connected: {mac} ({modeString})";
                 result = true;
