@@ -8,19 +8,24 @@ namespace RacingDualSense.GameParsers
     internal class ForzaParser : Parser
     {
         // Colors for Light Bar while in menus -> using car's PI colors from Forza
-        public static readonly uint CarClassD = 0;
-        public static readonly int[] ColorClassD = { 107, 185, 236 };
-        public static readonly uint CarClassC = 1;
-        public static readonly int[] ColorClassC = { 234, 202, 49 };
-        public static readonly uint CarClassB = 2;
-        public static readonly int[] ColorClassB = { 211, 90, 37 };
-        public static readonly uint CarClassA = 3;
-        public static readonly int[] ColorClassA = { 187, 59, 34 };
-        public static readonly uint CarClassS1 = 4;
-        public static readonly int[] ColorClassS1 = { 128, 54, 243 };
-        public static readonly uint CarClassS2 = 5;
-        public static readonly int[] ColorClassS2 = { 75, 88, 229 };
-        public static readonly int[] ColorClassX = { 105, 182, 72 };
+        public const uint CarClassD = 0;
+        public const uint CarClassC = 1;
+        public const uint CarClassB = 2;
+        public const uint CarClassA = 3;
+        public const uint CarClassS1 = 4;
+        public const uint CarClassS2 = 5;
+        public const uint CarClassR = 6; // forza horizon 6's class between S2 and X
+        public const uint CarClassX = 7; // fh 4-5's X is 6, fh 6 is 7
+
+        public static readonly int[] ColorClassD = { 20, 130, 255 };
+        public static readonly int[] ColorClassC = { 240, 150, 0 };
+        public static readonly int[] ColorClassB = { 255, 40, 5 };
+        public static readonly int[] ColorClassA = { 240, 10, 4 };
+        public static readonly int[] ColorClassS1 = { 90, 0, 255 };
+        public static readonly int[] ColorClassS2 = { 0, 8, 255 };
+        public static readonly int[] ColorClassR = { 220, 0, 70 };
+        public static readonly int[] ColorClassX = { 30, 255, 0 };
+        public static readonly int[] ColorClassOther = { 255, 138, 138 };
         public ForzaParser(Config.Config settings) : base(settings)
         {
         }
@@ -52,76 +57,34 @@ namespace RacingDualSense.GameParsers
         {
             ReportableInstruction reportableInstruction = new ReportableInstruction();
 
-            uint currentClass = LastValidCarClass;
-            if (data.CarClass > 0)
-            {
-                LastValidCarClass = currentClass = data.CarClass;
-            }
-
-            int currentCPI = LastValidCarCPI;
-            if (data.CarPerformanceIndex > 0)
-            {
-                LastValidCarCPI = currentCPI = Math.Min((int)data.CarPerformanceIndex, 255);
-            }
-
-
             RightTrigger.Parameters = [controllerIndex, Trigger.Right, DSX.TriggerMode.Normal, 0, 0];
             LeftTrigger.Parameters = [controllerIndex, Trigger.Left, DSX.TriggerMode.Normal, 0, 0];
 
             #region Light Bar color
-            int CPIcolorR;
-            int CPIcolorG;
-            int CPIcolorB;
-
-            float cpiRatio = currentCPI / MaxCPI;
-
-            if (currentClass <= CarClassD)
+            int[] RGBarray;
+            if(LastValidCarCPI < 100)
             {
-                CPIcolorR = (int)Math.Floor(cpiRatio * ColorClassD[0]);
-                CPIcolorG = (int)Math.Floor(cpiRatio * ColorClassD[1]);
-                CPIcolorB = (int)Math.Floor(cpiRatio * ColorClassD[2]);
-            }
-            else if (currentClass <= CarClassC)
+                RGBarray = ColorClassOther;
+            } else
             {
-                CPIcolorR = (int)Math.Floor(cpiRatio * ColorClassC[0]);
-                CPIcolorG = (int)Math.Floor(cpiRatio * ColorClassC[1]);
-                CPIcolorB = (int)Math.Floor(cpiRatio * ColorClassC[2]);
-            }
-            else if (currentClass <= CarClassB)
-            {
-                CPIcolorR = (int)Math.Floor(cpiRatio * ColorClassB[0]);
-                CPIcolorG = (int)Math.Floor(cpiRatio * ColorClassB[1]);
-                CPIcolorB = (int)Math.Floor(cpiRatio * ColorClassB[2]);
-            }
-            else if (currentClass <= CarClassA)
-            {
-                CPIcolorR = (int)Math.Floor(cpiRatio * ColorClassA[0]);
-                CPIcolorG = (int)Math.Floor(cpiRatio * ColorClassA[1]);
-                CPIcolorB = (int)Math.Floor(cpiRatio * ColorClassA[2]);
-            }
-            else if (currentClass <= CarClassS1)
-            {
-                CPIcolorR = (int)Math.Floor(cpiRatio * ColorClassS1[0]);
-                CPIcolorG = (int)Math.Floor(cpiRatio * ColorClassS1[1]);
-                CPIcolorB = (int)Math.Floor(cpiRatio * ColorClassS1[2]);
-            }
-            else if (currentClass <= CarClassS2)
-            {
-                CPIcolorR = (int)Math.Floor(cpiRatio * ColorClassS2[0]);
-                CPIcolorG = (int)Math.Floor(cpiRatio * ColorClassS2[1]);
-                CPIcolorB = (int)Math.Floor(cpiRatio * ColorClassS2[2]);
-            }
-            else
-            {
-                CPIcolorR = ColorClassX[0];
-                CPIcolorG = ColorClassX[1];
-                CPIcolorB = ColorClassX[2];
+                RGBarray = LastValidCarClass switch
+                {
+                    CarClassD => ColorClassD,
+                    CarClassC => ColorClassC,
+                    CarClassB => ColorClassB,
+                    CarClassA => ColorClassA,
+                    CarClassS1 => ColorClassS1,
+                    CarClassS2 => ColorClassS2,
+                    CarClassR => LastValidCarCPI == 999 ? ColorClassX : ColorClassR, // fh6: R => 901-998, fh5: X => 999
+                    CarClassX => ColorClassX,
+                    _ => ColorClassOther
+                };
             }
 
-            LightBar.Parameters = [controllerIndex, CPIcolorR, CPIcolorG, CPIcolorB];
+            LightBar.Parameters = [controllerIndex, RGBarray[0], RGBarray[1], RGBarray[2]];
             #endregion
 
-            reportableInstruction.RacingReportStructs.Add(new RacingReportStruct(VerboseLevel.Limited, RacingReportStruct.ReportType.NORACE, $"No race going on. Normal Triggers. Car's Class = {currentClass}; CPI = {currentCPI}; CPI Ratio = {cpiRatio}; Color [{CPIcolorR}, {CPIcolorG}, {CPIcolorB}]"));
+            reportableInstruction.RacingReportStructs.Add(new RacingReportStruct(VerboseLevel.Limited, RacingReportStruct.ReportType.NORACE, $"No race going on. Normal Triggers. Car's Class = {LastValidCarClass}; CPI = {LastValidCarCPI}; Color [{RGBarray[0]}, {RGBarray[1]}, {RGBarray[2]}]"));
 
             reportableInstruction.Instructions = [LightBar, LeftTrigger, RightTrigger];
             return reportableInstruction;
@@ -130,29 +93,36 @@ namespace RacingDualSense.GameParsers
 
         public override void ParsePacket(byte[] packet)
         {
-            data = new DataPacket();
+            data = new DataPacket
+            {
+                // sled
+                IsRaceOn = packet.IsRaceOn(),
+                EngineMaxRpm = packet.EngineMaxRpm(),
+                EngineIdleRpm = packet.EngineIdleRpm(),
+                CurrentEngineRpm = packet.CurrentEngineRpm(),
+                AccelerationX = packet.AccelerationX(),
+                AccelerationZ = packet.AccelerationZ(),
 
-            // sled
-            data.IsRaceOn = packet.IsRaceOn();
-            data.EngineMaxRpm = packet.EngineMaxRpm();
-            data.EngineIdleRpm = packet.EngineIdleRpm();
-            data.CurrentEngineRpm = packet.CurrentEngineRpm();
-            data.AccelerationX = packet.AccelerationX();
-            data.AccelerationZ = packet.AccelerationZ();
+                TireCombinedSlipFrontLeft = packet.TireCombinedSlipFl(),
+                TireCombinedSlipFrontRight = packet.TireCombinedSlipFr(),
+                TireCombinedSlipRearLeft = packet.TireCombinedSlipRl(),
+                TireCombinedSlipRearRight = packet.TireCombinedSlipRr(),
 
-            data.TireCombinedSlipFrontLeft = packet.TireCombinedSlipFl();
-            data.TireCombinedSlipFrontRight = packet.TireCombinedSlipFr();
-            data.TireCombinedSlipRearLeft = packet.TireCombinedSlipRl();
-            data.TireCombinedSlipRearRight = packet.TireCombinedSlipRr();
+                CarClass = packet.CarClass(),
+                CarPerformanceIndex = packet.CarPerformanceIndex(),
 
-            data.CarClass = packet.CarClass();
-            data.CarPerformanceIndex = packet.CarPerformanceIndex();
+                Speed = packet.Speed(),
+                Power = packet.Power(),
 
-            data.Speed = packet.Speed();
-            data.Power = packet.Power();
+                Accelerator = packet.Accelerator(),
+                Brake = packet.Brake()
+            };
 
-            data.Accelerator = packet.Accelerator();
-            data.Brake = packet.Brake();
+            if (data.CarPerformanceIndex > 0)
+            {
+                LastValidCarClass = data.CarClass;
+                LastValidCarCPI = data.CarPerformanceIndex;
+            }
 
 
             data.FourWheelCombinedTireSlip = (Math.Abs(data.TireCombinedSlipFrontLeft) + Math.Abs(data.TireCombinedSlipFrontRight) + Math.Abs(data.TireCombinedSlipRearLeft) + Math.Abs(data.TireCombinedSlipRearRight)) / 4;

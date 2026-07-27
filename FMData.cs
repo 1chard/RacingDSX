@@ -62,7 +62,7 @@ namespace RacingDualSense
         public static float SuspensionTravelMetersRr(this byte[] bytes) { return GetSingle(bytes, 208); }
         public static uint CarOrdinal(this byte[] bytes) { return GetUInt8(bytes, 212); }
         public static uint CarClass(this byte[] bytes) { return GetUInt8(bytes, 216); }
-        public static uint CarPerformanceIndex(this byte[] bytes) { return GetUInt8(bytes, 220); }
+        public static uint CarPerformanceIndex(this byte[] bytes) { return GetUInt32(bytes, 220); }
         public static uint DriveTrain(this byte[] bytes) { return GetUInt8(bytes, 224); }
         public static uint NumCylinders(this byte[] bytes) { return GetUInt8(bytes, 228); }
 

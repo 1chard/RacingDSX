@@ -22,7 +22,7 @@ namespace RacingDualSense.GameParsers
         protected int lastBrakeFreq = 0;
 
         protected uint LastValidCarClass = 0;
-        protected int LastValidCarCPI = 0;
+        protected uint LastValidCarCPI = 0;
         protected float MaxCPI = 255;
 
         protected float LastEngineRPM = 0;
