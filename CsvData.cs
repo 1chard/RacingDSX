@@ -1,4 +1,4 @@
-namespace RacingDSX
+namespace RacingDualSense
 {
     public class CsvData
     {

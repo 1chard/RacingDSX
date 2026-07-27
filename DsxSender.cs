@@ -1,13 +1,13 @@
-﻿using RacingDSX.Config;
-using RacingDSX.DSX;
+﻿using RacingDualSense.Config;
+using RacingDualSense.DSX;
 using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
-using static RacingDSX.RacingWorker;
+using static RacingDualSense.RacingWorker;
 
-namespace RacingDSX
+namespace RacingDualSense
 {
     public class DsxSender : IDataSender
     {

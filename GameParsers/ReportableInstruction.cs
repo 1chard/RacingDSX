@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using RacingDSX.DSX;
+using RacingDualSense.DSX;
 
-namespace RacingDSX.GameParsers
+namespace RacingDualSense.GameParsers
 {
     public class ReportableInstruction
     {

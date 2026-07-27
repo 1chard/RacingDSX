@@ -1,14 +1,14 @@
 ﻿using DualSenseSharp;
-using RacingDSX.Config;
+using RacingDualSense.Config;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using static RacingDSX.RacingWorker;
+using static RacingDualSense.RacingWorker;
 
-namespace RacingDSX
+namespace RacingDualSense
 {
     public class Core
     {
@@ -80,7 +80,7 @@ namespace RacingDSX
             {
                 bForzaConnected = true;
                 bDsxConnected = CurrentSettings.DSXPort != null;
-                StartRacingDSXThread();
+                StartRacingDualSenseThread();
             }
 
             this.dualSenseHandler = dualSenseHandler;
@@ -113,12 +113,12 @@ namespace RacingDSX
             return true;
         }
 
-        public void RestartRacingDSXThread()
+        public void RestartRacingDualSenseThread()
         {
-            StopRacingDSXThread();
-            StartRacingDSXThread();
+            StopRacingDualSenseThread();
+            StartRacingDualSenseThread();
         }
-        public void StartRacingDSXThread()
+        public void StartRacingDualSenseThread()
         {
             if (racingDSXTask != null || racingWorker == null)
                 return;
@@ -128,7 +128,7 @@ namespace RacingDSX
             racingDSXTask = Task.Factory.StartNew(racingWorker.Run, TaskCreationOptions.LongRunning);
         }
 
-        public void StopRacingDSXThread()
+        public void StopRacingDualSenseThread()
         {
             try
             {

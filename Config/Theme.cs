@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RacingDSX.Config
+namespace RacingDualSense.Config
 {
     public enum Theme
     {

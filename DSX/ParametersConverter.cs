@@ -4,7 +4,7 @@ using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace RacingDSX.DSX;
+namespace RacingDualSense.DSX;
 
 public class ParametersConverter : JsonConverter<object[]>
 {

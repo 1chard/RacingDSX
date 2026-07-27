@@ -1,11 +1,11 @@
-﻿using RacingDSX.GameParsers;
+﻿using RacingDualSense.GameParsers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RacingDSX.Config
+namespace RacingDualSense.Config
 {
     public class Profile
     {

@@ -1,8 +1,8 @@
-﻿using RacingDSX.DSX;
+﻿using RacingDualSense.DSX;
 using System;
-using static RacingDSX.RacingWorker;
+using static RacingDualSense.RacingWorker;
 
-namespace RacingDSX.GameParsers
+namespace RacingDualSense.GameParsers
 {
     public abstract class Parser
     {

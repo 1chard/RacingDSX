@@ -1,13 +1,13 @@
 ﻿using DualSenseSharp;
-using RacingDSX.Config;
-using RacingDSX.DSX;
-using RacingDSX.GameParsers;
+using RacingDualSense.Config;
+using RacingDualSense.DSX;
+using RacingDualSense.GameParsers;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 
-namespace RacingDSX
+namespace RacingDualSense
 {
     public interface IDataSender
     {

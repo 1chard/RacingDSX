@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RacingDSX
+namespace RacingDualSense
 {
     public static class PacketParse
     {

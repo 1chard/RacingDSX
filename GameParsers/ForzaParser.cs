@@ -1,9 +1,9 @@
-﻿using RacingDSX.Config;
-using RacingDSX.DSX;
+﻿using RacingDualSense.Config;
+using RacingDualSense.DSX;
 using System;
-using static RacingDSX.RacingWorker;
+using static RacingDualSense.RacingWorker;
 
-namespace RacingDSX.GameParsers
+namespace RacingDualSense.GameParsers
 {
     internal class ForzaParser : Parser
     {

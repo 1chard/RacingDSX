@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RacingDSX.GameParsers
+namespace RacingDualSense.GameParsers
 {
     internal class DirtParser : Parser
     {

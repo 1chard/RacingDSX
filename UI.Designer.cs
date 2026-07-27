@@ -1,8 +1,8 @@
-﻿using RacingDSX.Graphics;
+﻿using RacingDualSense.Graphics;
 using System;
 using System.ComponentModel;
 
-namespace RacingDSX
+namespace RacingDualSense
 {
 	partial class UI
 	{

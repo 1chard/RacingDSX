@@ -1,5 +1,5 @@
 ﻿using Microsoft.Win32;
-using RacingDSX.Graphics;
+using RacingDualSense.Graphics;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 
-namespace RacingDSX.Graphics
+namespace RacingDualSense.Graphics
 {
 
     class ThemeManager

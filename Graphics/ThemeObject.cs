@@ -2,7 +2,7 @@
 using System.Windows.Forms;
 
 
-namespace RacingDSX.Graphics
+namespace RacingDualSense.Graphics
 {
     public class ThemeObject
     {

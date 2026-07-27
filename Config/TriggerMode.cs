@@ -1,4 +1,4 @@
-﻿namespace RacingDSX.Config
+﻿namespace RacingDualSense.Config
 {
     public enum TriggerMode : sbyte
     {

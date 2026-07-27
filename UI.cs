@@ -1,7 +1,7 @@
-﻿using RacingDSX.Config;
-using RacingDSX.GameParsers;
-using RacingDSX.Graphics;
-using RacingDSX.Properties;
+﻿using RacingDualSense.Config;
+using RacingDualSense.GameParsers;
+using RacingDualSense.Graphics;
+using RacingDualSense.Properties;
 using System;
 using System.ComponentModel;
 using System.Linq;
@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 //using System.Configuration;
 using System.Windows.Forms;
-using static RacingDSX.RacingWorker;
+using static RacingDualSense.RacingWorker;
 
-namespace RacingDSX
+namespace RacingDualSense
 {
     public partial class UI : Form
     {
@@ -67,7 +67,7 @@ namespace RacingDSX
 
         private void UI_Load(object sender, EventArgs e)
         {
-            Text = "RacingDSX version: " + Program.VERSION + (core.targetExecutableName != null ? $" [{core.targetExecutableName}] " : "");
+            Text = "RacingDualSense version: " + Program.VERSION + (core.targetExecutableName != null ? $" [{core.targetExecutableName}] " : "");
 
             noRaceText.Text = string.Empty;
             throttleVibrationMsg.Text = string.Empty;
@@ -278,7 +278,7 @@ namespace RacingDSX
             core.bForzaConnected = true;
             core.bDsxConnected = core.CurrentSettings.DSXPort != null;
             UpdateForzaConnectionStatus();
-            core.StartRacingDSXThread();
+            core.StartRacingDualSenseThread();
             ConfigHandler.SaveConfig();
         }
 
@@ -946,7 +946,7 @@ namespace RacingDSX
                 ConfigHandler.SaveConfig();
                 core.racingWorker.SetSettings(core.CurrentSettings);
 
-                core.StartRacingDSXThread();
+                core.StartRacingDualSenseThread();
             }
         }
 
@@ -1019,7 +1019,7 @@ namespace RacingDSX
             {
                 if (core.bForzaConnected)
                 {
-                    core.RestartRacingDSXThread();
+                    core.RestartRacingDualSenseThread();
                 }
             }
         }

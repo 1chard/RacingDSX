@@ -1,6 +1,6 @@
-﻿using static RacingDSX.PacketParse;
+﻿using static RacingDualSense.PacketParse;
 
-namespace RacingDSX
+namespace RacingDualSense
 {
     public static class FMData
     {

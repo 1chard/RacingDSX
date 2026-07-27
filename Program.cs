@@ -1,4 +1,4 @@
-﻿using RacingDSX.Config;
+﻿using RacingDualSense.Config;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace RacingDSX
+namespace RacingDualSense
 {
 
     public class Program
@@ -30,7 +30,7 @@ namespace RacingDSX
                 {
                     case "-v":
                         {
-                            Console.WriteLine("RacingDSX Version: " + VERSION);
+                            Console.WriteLine("RacingDualSense Version: " + VERSION);
                             return;
                         }
                     case "--nogui":

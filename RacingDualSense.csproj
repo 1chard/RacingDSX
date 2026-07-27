@@ -12,9 +12,9 @@
 		<Platforms>AnyCPU</Platforms>
 		<PackageReadmeFile>Readme.md</PackageReadmeFile>
 		<UseWindowsForms>True</UseWindowsForms>
-		<StartupObject>RacingDSX.Program</StartupObject>
+		<StartupObject>RacingDualSense.Program</StartupObject>
 		<IsPublishable>True</IsPublishable>
-		<Title>RacingDSX</Title>
+		<Title>RacingDualSense</Title>
 		<IncludeSymbols>True</IncludeSymbols>
 		<UseWPF>False</UseWPF>
 		<SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>

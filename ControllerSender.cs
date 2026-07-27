@@ -1,15 +1,15 @@
 ﻿using DualSenseSharp;
 using DualSenseSharp.Components;
 using DualSenseSharp.Components.Triggers.DSX;
-using RacingDSX.Config;
-using RacingDSX.DSX;
+using RacingDualSense.Config;
+using RacingDualSense.DSX;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using static RacingDSX.RacingWorker;
+using static RacingDualSense.RacingWorker;
 
-namespace RacingDSX
+namespace RacingDualSense
 {
     public class ControllerSender : IDataSender
     {

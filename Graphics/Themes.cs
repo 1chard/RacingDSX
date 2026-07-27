@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
 
-namespace RacingDSX.Graphics
+namespace RacingDualSense.Graphics
 {
     public static class Themes
     {

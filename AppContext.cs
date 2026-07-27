@@ -6,10 +6,10 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static RacingDSX.RacingWorker.RacingReportStruct;
-using static RacingDSX.RacingWorker;
+using static RacingDualSense.RacingWorker.RacingReportStruct;
+using static RacingDualSense.RacingWorker;
 
-namespace RacingDSX
+namespace RacingDualSense
 {
     class AppContext : ApplicationContext
     {
@@ -42,7 +42,7 @@ namespace RacingDSX
             {
                 Icon = SystemIcons.Application,
                 Visible = true,
-                Text = "RacingDSX" + (core.targetExecutableName != null ? $" [{core.targetExecutableName}] " : "")
+                Text = "RacingDualSense" + (core.targetExecutableName != null ? $" [{core.targetExecutableName}] " : "")
             };
 
             dsxConnectionMenuItem = new ToolStripMenuItem("")
@@ -145,14 +145,14 @@ namespace RacingDSX
             {
                 if (core.bForzaConnected)
                 {
-                    core.StartRacingDSXThread();
+                    core.StartRacingDualSenseThread();
                 }
             }
             else
             {
                 if (!core.bForzaConnected)
                 {
-                    core.StopRacingDSXThread();
+                    core.StopRacingDualSenseThread();
                 }
             }
 

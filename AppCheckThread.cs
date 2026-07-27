@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace RacingDSX
+namespace RacingDualSense
 {
     public struct AppCheckReportStruct
     {
@@ -42,7 +42,7 @@ namespace RacingDSX
 
     public class AppCheckThread
     {
-        readonly RacingDSX.Config.Config settings;
+        readonly RacingDualSense.Config.Config settings;
         private Dictionary<String, String> processProfilePairs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         private Process process;
 
@@ -50,7 +50,7 @@ namespace RacingDSX
 
         protected bool bRunning = false;
 
-        public AppCheckThread(ref RacingDSX.Config.Config currentSettings, IProgress<AppCheckReportStruct> progressReporter, Process process = null)
+        public AppCheckThread(ref RacingDualSense.Config.Config currentSettings, IProgress<AppCheckReportStruct> progressReporter, Process process = null)
         {
 
             settings = currentSettings;

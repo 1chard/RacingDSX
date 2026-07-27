@@ -1,4 +1,4 @@
-﻿using RacingDSX.GameParsers;
+﻿using RacingDualSense.GameParsers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +8,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace RacingDSX.Config
+namespace RacingDualSense.Config
 {
     public class ConfigHandler
     {
@@ -16,7 +16,7 @@ namespace RacingDSX.Config
         //Method to initialize config file (Using default values), need to account for the different default profiles
         //Method to write config file
         //Singleton access to config data
-        private static readonly String configFilePath = "RacingDSX.json";
+        private static readonly String configFilePath = "RacingDualSense.json";
         private static Config configData;
 
         private static void InitializeConfig()
