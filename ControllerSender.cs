@@ -28,7 +28,7 @@ namespace RacingDualSense
         }
 
 
-        public void Send(Packet data)
+        public async void Send(Packet data)
         {
             lock (this)
             {
@@ -105,8 +105,6 @@ namespace RacingDualSense
                         progressReporter.Report(new RacingReportStruct($"Sending Message to HID..."));
                     }
 
-
-                    var swOutput = Stopwatch.StartNew();
                     var task = dualSense.UpdateOutputAsync().AsTask();
                     if (task.Result)
                     {
@@ -137,8 +135,20 @@ namespace RacingDualSense
         {
         }
 
-        public void Stop()
+        public async void Stop()
         {
+            lock (this)
+            {
+                var dualSense = controllerSupplier();
+
+                if (dualSense != null)
+                {
+                    dualSense.LeftTrigger.Mode = new Normal();
+                    dualSense.RightTrigger.Mode = new Normal();
+                    dualSense.UpdateOutputAsync().AsTask();
+                }
+            }
+            
         }
     }
 }

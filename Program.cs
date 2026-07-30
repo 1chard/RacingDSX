@@ -15,6 +15,11 @@ namespace RacingDualSense
 
         static void Main(string[] args)
         {
+            if (Path.GetFileName(Application.ExecutablePath).Contains("headless", StringComparison.CurrentCultureIgnoreCase) && args.Length == 0)
+            {
+                args = ["--attach", "--nogui"];
+            }
+
             bool isGuiMode = true;
             Process process = null;
 
@@ -41,21 +46,24 @@ namespace RacingDualSense
                         }
                     case "--attach":
                         {
-                            process = FindGameExists(profile.executableNames);
-                            if (process == null)
+                            var processAndProfile = FindGameExists(config);
+                            if (processAndProfile == null)
                             {
                                 Console.WriteLine("Error: Could not find a process to attach to.");
                                 return;
                             }
+
+                            process = processAndProfile.Value.Process;
+                            profile = processAndProfile.Value.Profile;
                             break;
                         }
-                    case "--exe-attach":
+                    case "--run":
                         {
                             i++;
 
                             if (i >= args.Length)
                             {
-                                Console.WriteLine("Error: --exe-attach requires an argument");
+                                Console.WriteLine("Error: --run requires an argument");
                                 return;
                             }
 
@@ -103,19 +111,21 @@ namespace RacingDualSense
             return KeyValuePair.Create(currentSettings, selectedProfile);
         }
 
-        private static Process FindGameExists(List<string> executableNames)
+        private static (Process Process, Profile Profile)? FindGameExists(Config.Config config)
         {
             for (var i = 0; i < 10; i++)
             {
                 if (i != 0)
                     System.Threading.Thread.Sleep(1000);
-
-                foreach (var processName in executableNames)
+                foreach (var profile in config.Profiles)
                 {
-                    var processes = Process.GetProcessesByName(processName);
-                    if (processes.Length > 0)
+                    foreach (var processName in profile.Value.executableNames)
                     {
-                        return processes.First();
+                        var processes = Process.GetProcessesByName(processName);
+                        if (processes.Length > 0)
+                        {
+                            return (processes.First(), profile.Value);
+                        }
                     }
                 }
             }
