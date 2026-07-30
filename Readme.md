@@ -1,7 +1,7 @@
 ![GitHub all releases](https://img.shields.io/github/downloads/1chard/racingDSX/total)
 
-
-Tested and confirmed to work with DSX v2, v3.1, and DSY 
+Works with DSX, but since version 0.8.0, it is optional.
+Report bugs with built-in controller implementation here: [issues](https://github.com/1chard/RacingDualSense/issues)
 
 Add Dualsense's dynamic trigger support for Forza and Dirt
 ## Supported games:  
@@ -15,10 +15,10 @@ Add Dualsense's dynamic trigger support for Forza and Dirt
 1. Install latest version of release: https://github.com/1chard/RacingDualSense/releases/latest
 2. Run RacingDualSense.exe
 3. Allow firewall if necessary
-4. Open DSX or [DualSenseY](https://github.com/WujekFoliarz/DualSenseY-v2) in the background, be sure UDP port is set to `6969`
-5. Launch Forza Horizon 6
-6. In the menu, open Settings > HUD and Gameplay
-7. Set DATA OUT to ON, set DATA OUT IP ADDRESS to 127.0.0.1 and set DATA OUT IP PORT to 5300
+4. Launch Forza Horizon 6
+5. In the menu, open Settings > HUD and Gameplay
+6. Set DATA OUT to ON, set DATA OUT IP ADDRESS to 127.0.0.1 and set DATA OUT IP PORT to 5300
+7. (Optional) If you want to use DSX or [DualSenseY](https://github.com/WujekFoliarz/DualSenseY-v2) in the background, put UDP port to 6969 on "DSX Port" input
 
 ## Note for Microsoft Store
 Telemetry data may not be received on Xbox/Microsoft Store games, you need to enable UDP Loopback
@@ -26,18 +26,19 @@ Telemetry data may not be received on Xbox/Microsoft Store games, you need to en
 2. Start the utility (if it shows a message about orphan sid, you can safely ignore it)
 3. Make sure that Forza Horizon 4 / Motorsport 7 are checked
 4. Save changes
-In case the above do not work for you run the below command in Powershell as admin, the command enables udp loopback without needing the utility.
 
 ## Launch options
 - `--nogui`, `--headless` Launches the application without the GUI, loads active configuration file
 - `--attach` Try 10 seconds to attach to game, if successful starts to track game's lifespan, when the game is closed, RacingDualSense will automatically close as well
-- `--exe-attach` Runs and attaches to game process, when the game is closed, RacingDualSense will automatically close
+- `--run` Runs and attaches to game process, when the game is closed, RacingDualSense will automatically close
 
 If you want to auto start RacingDualSense with a Steam game without the interface, follow the steps:  
 1. Open game properties
 <img width="258" height="200" alt="image" src="https://github.com/user-attachments/assets/180f4e5d-5fb9-40a7-9a5a-1cb17626ffde" />
  
-2. Put on Launch Options: `"C:\Path\To\RacingDualSense.exe" --headless --exe-attach %command%`  
+2. Put the Launch Options according to your case:
+- If using DSX: run the game from RacingDualSense: `"C:\Path\To\RacingDualSense.exe" --headless --run %command%`  
+- If using new built-in controller: rename executable from `RacingDualSense.exe` to `RacingDualSenseHeadless.exe`, then put: `"C:\Windows\System32\cmd.exe" /c "start "" explorer.exe "C:\Path\To\RacingDualSenseHeadless.exe" && start "" %command%"`
 
 Use tray's "Open Interface" option to open GUI if you started RacingDualSense with `--nogui` or `--headless`.
 
